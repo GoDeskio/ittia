@@ -1,0 +1,25 @@
+{
+  "short_name": "VoiceVault",
+  "name": "VoiceVault - Secure Voice Communication Platform",
+  "icons": [
+    {
+      "src": "assets/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "assets/mobile-icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "assets/desktop-icon.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+} 

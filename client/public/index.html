@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/assets/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="VoiceVault - Secure Voice Communication Platform"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/assets/mobile-icon.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <title>VoiceVault</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    />
+    <style>
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+      #loading-screen img {
+        width: 200px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="loading-screen">
+      <img src="%PUBLIC_URL%/assets/loading.gif" alt="Loading..." />
+    </div>
+    <div id="root"></div>
+    <script>
+      window.addEventListener('load', function() {
+        // Hide loading screen after app loads
+        setTimeout(function() {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+          }
+        }, 1000);
+      });
+    </script>
+  </body>
+</html> 

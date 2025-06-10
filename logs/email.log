@@ -1,0 +1,17 @@
+
+----- Email Sent at 2025-06-08T21:56:51.584Z -----
+To: admin@godesk.io
+Subject: Welcome to VoiceVault - Please Verify Your Email
+Content:
+
+Welcome to VoiceVault, Test Admin!
+
+Thank you for signing up. Please verify your email address by clicking the link below:
+
+http://localhost:3000/verify-email?token=6f5207b8bb2ab32232e76fc2c681db9022a3764faa5d60c663d457d725cdc5b4
+
+This link will expire in 24 hours.
+
+If you did not create an account, please ignore this email.
+  
+-------------------------------------------------

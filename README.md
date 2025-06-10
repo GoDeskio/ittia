@@ -91,3 +91,72 @@ For open source projects, say how it is licensed.
 
 ## Project status
 If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+
+## Adding External Code
+
+### NPM Packages
+
+To add new NPM packages:
+
+```bash
+# Client-side dependencies
+cd client
+npm install package-name
+
+# Server-side dependencies
+cd server
+npm install package-name
+```
+
+### Environment Variables
+
+1. Copy the example environment file:
+```bash
+cp .env.example .env
+```
+
+2. Update the variables in `.env` with your values
+
+### Shared Code
+
+Place shared code in the `shared/` directory:
+```
+shared/
+  ├── types/        # Shared TypeScript types
+  ├── utils/        # Shared utility functions
+  └── constants/    # Shared constants
+```
+
+### External Services
+
+1. Add service configuration to `.env`:
+```
+EXTERNAL_SERVICE_API_KEY=your_api_key
+EXTERNAL_SERVICE_URL=https://api.service.com
+```
+
+2. Add service configuration to `server/src/config/`:
+```typescript
+export const externalServiceConfig = {
+  apiKey: process.env.EXTERNAL_SERVICE_API_KEY,
+  url: process.env.EXTERNAL_SERVICE_URL
+};
+```
+
+### Best Practices
+
+1. Always document new dependencies in this README
+2. Add appropriate type definitions
+3. Include tests for external code integration
+4. Keep dependencies updated
+5. Review security implications
+6. Check license compatibility
+
+### Current External Dependencies
+
+- React
+- Material-UI
+- Express
+- MongoDB
+- TypeScript
+- [Add new dependencies here]

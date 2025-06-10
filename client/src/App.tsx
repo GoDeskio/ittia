@@ -12,6 +12,10 @@ import { ErrorReportDialog } from './components/ErrorReportDialog';
 import { ErrorLogDashboard } from './components/ErrorLogDashboard';
 import Messages from './pages/Messages';
 import theme from './theme';
+import AboutPage from './pages/AboutPage';
+import SettingsPage from './pages/SettingsPage';
+import Layout from './components/Layout';
+import CyborgLoadingPage from './pages/CyborgLoadingPage';
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -94,7 +98,7 @@ const AppContent: React.FC = () => {
                 path="/settings"
                 element={
                   <PrivateRoute>
-                    <Settings />
+                    <SettingsPage />
                   </PrivateRoute>
                 }
               />
@@ -130,6 +134,12 @@ const AppContent: React.FC = () => {
                   </PrivateRoute>
                 }
               />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/cyborg-loading" element={
+                <Layout>
+                  <CyborgLoadingPage />
+                </Layout>
+              } />
             </Routes>
 
             {/* Error reporting dialog for unhandled errors */}

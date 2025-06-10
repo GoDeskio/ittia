@@ -1,12 +1,211 @@
-# Ittia
+# VoiceVault
 
+VoiceVault is a sophisticated voice recognition and management system that allows users to record, analyze, and organize voice samples with advanced features including emotion detection, speaker identification, and comprehensive organization tools.
 
+## Table of Contents
+1. [Glossary](#1-glossary)
+2. [Features](#2-features)
+3. [Technical Stack](#3-technical-stack)
+4. [Prerequisites](#4-prerequisites)
+5. [Installation Guide](#5-installation-guide)
+6. [Configuration](#6-configuration)
+7. [Running the Application](#7-running-the-application)
+8. [Development Scripts](#8-development-scripts)
+9. [Troubleshooting](#9-troubleshooting)
+10. [License](#10-license)
+11. [Contact](#11-contact)
 
-## Getting started
+## 1. Glossary
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- **Voice Recognition**: Technology that identifies and authenticates individual speakers
+- **Emotion Detection**: Analysis of voice patterns to determine emotional states
+- **Speaker Identification**: Process of determining who is speaking
+- **RBAC**: Role-Based Access Control system for security management
+- **Voice Pattern Analysis**: Statistical analysis of voice characteristics
+- **Redis**: In-memory data structure store used as cache
+- **PostgreSQL**: Primary database for persistent storage
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## 2. Features
+
+- **Voice Recognition**: Advanced speaker identification and verification
+- **Emotion Detection**: 91 distinct emotions across 13 categories
+- **Organization System**: Hierarchical folders and comprehensive tagging
+- **Real-time Processing**: Immediate voice analysis and categorization
+- **Security**: Role-based access control and encryption
+- **Analytics**: Comprehensive voice pattern analysis
+
+## 3. Technical Stack
+
+### Frontend
+- React 18+
+- TypeScript 4.9+
+- Material-UI (MUI) v5
+- Chakra UI v3.20+
+- Emotion (styling) v11.14+
+
+### Backend
+- Node.js (v18+)
+- Express
+- TypeScript 4.9+
+
+### Infrastructure
+- PostgreSQL v14+
+- Redis v6+
+- Docker (optional)
+
+## 4. Prerequisites
+
+Before installation, ensure you have the following installed:
+
+- Node.js (v18 or higher)
+- PostgreSQL (v14 or higher)
+- Redis (v6 or higher)
+- Docker (optional, for containerization)
+- Git
+- npm or yarn (latest stable version)
+
+## 5. Installation Guide
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/voicevault.git
+cd voicevault
+```
+
+2. Install dependencies:
+```bash
+# Windows
+install-dependencies.bat
+
+# Unix/Linux/Mac
+./install-dependencies.sh
+
+# Alternative manual installation
+npm install
+cd client && npm install
+cd ../server && npm install
+cd ../shared && npm install
+```
+
+## 6. Configuration
+
+1. Set up environment variables:
+```bash
+# Copy environment template files
+cp .env.example .env
+cd client && cp .env.example .env
+cd ../server && cp .env.example .env
+```
+
+2. Configure the following in your .env files:
+```plaintext
+# Server .env
+PORT=3000
+DATABASE_URL=postgresql://username:password@localhost:5432/voicevault
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=your_jwt_secret
+
+# Client .env
+VITE_API_URL=http://localhost:3000
+```
+
+## 7. Running the Application
+
+### Development Mode
+```bash
+# Start both client and server
+npm run dev
+
+# Start server only
+npm run dev:server
+
+# Start client only
+npm run dev:client
+```
+
+### Production Mode
+```bash
+# Build the application
+npm run build
+
+# Start the production server
+npm start
+```
+
+## 8. Development Scripts
+
+```bash
+# Run tests
+npm test                  # Run all tests
+npm run test:server      # Run server tests
+npm run test:client      # Run client tests
+
+# Build the application
+npm run build            # Build both client and server
+npm run build:server     # Build server only
+npm run build:client     # Build client only
+
+# Development
+npm run dev              # Start development servers
+```
+
+## 9. Troubleshooting
+
+Common issues and solutions:
+
+1. **Port Already in Use**
+```bash
+# Windows
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+
+# Unix/Linux/Mac
+lsof -i :3000
+kill -9 <PID>
+```
+
+2. **Database Connection Issues**
+- Verify PostgreSQL is running
+- Check database credentials in .env
+- Ensure database exists:
+```bash
+psql -U postgres
+CREATE DATABASE voicevault;
+```
+
+3. **Redis Connection Issues**
+- Verify Redis server is running
+- Check Redis connection string in .env
+
+## 10. License
+
+This software is protected by copyright law and international treaties. Unauthorized reproduction or distribution of this software, or any portion of it, may result in severe civil and criminal penalties.
+
+Copyright © 2024 Dustin Pennington. All rights reserved.
+
+## 11. Contact
+
+For any inquiries about this project, please contact:
+
+Dustin Pennington
+- Project Creator & Lead Developer
+- [Contact Information]
+
+---
+
+## Contributing
+
+For development team members, please follow these guidelines:
+
+1. Create feature branches from `develop`
+2. Follow the conventional commits specification
+3. Include tests for new features
+4. Update documentation as needed
+5. Submit PRs against the `develop` branch
+
+## Project Status
+
+Active Development - Version 1.0.0
 
 ## Add your files
 

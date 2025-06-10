@@ -22,6 +22,7 @@ import {
   ExitToApp as LogoutIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import CyborgIcon from './CyborgIcon';
 
 const drawerWidth = 240;
 
@@ -43,6 +44,7 @@ export default function Layout({ children }: LayoutProps) {
   const menuItems = [
     { text: 'Home', icon: <HomeIcon />, path: '/' },
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: 'Cyborg Loading', icon: <CyborgIcon />, path: '/cyborg-loading' },
     { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
   ];
 

@@ -18,12 +18,9 @@ import {
   CardContent,
   IconButton,
   Tooltip,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
 } from '@mui/material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
+import Tab from '@mui/material/Tab';
 import {
   Download as DownloadIcon,
   Visibility as VisibilityIcon,
@@ -74,6 +71,7 @@ const AdminDashboard: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [userActivity, setUserActivity] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState('1');
 
   useEffect(() => {
     fetchData();
@@ -137,6 +135,10 @@ const AdminDashboard: React.FC = () => {
     return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${sizes[i]}`;
   };
 
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    setActiveTab(newValue);
+  };
+
   if (loading) {
     return <CircularProgress />;
   }
@@ -154,25 +156,24 @@ const AdminDashboard: React.FC = () => {
           </Alert>
         )}
 
-        <Tabs>
-          <TabList>
-            <Tab>User Management</Tab>
-            <Tab>Upload Settings</Tab>
-            <Tab>Icon Management</Tab>
-          </TabList>
-
-          <TabPanels>
-            <TabPanel>
-              <UserManagement />
-            </TabPanel>
-            <TabPanel>
-              <UploadSettings />
-            </TabPanel>
-            <TabPanel>
-              <IconManagement />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+        <TabContext value={activeTab}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <TabList onChange={handleTabChange}>
+              <Tab label="User Management" value="1" />
+              <Tab label="Upload Settings" value="2" />
+              <Tab label="Icon Management" value="3" />
+            </TabList>
+          </Box>
+          <TabPanel value="1">
+            <UserManagement />
+          </TabPanel>
+          <TabPanel value="2">
+            <UploadSettings />
+          </TabPanel>
+          <TabPanel value="3">
+            <IconManagement />
+          </TabPanel>
+        </TabContext>
 
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} md={3}>

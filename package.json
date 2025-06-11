@@ -11,7 +11,7 @@
   },
   "scripts": {
     "start": "node dist/server/src/index.js",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev": "concurrently --kill-others \"powershell -Command cd server; npm run dev\" \"powershell -Command cd client; npm run dev\"",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
     "build": "npm run build:server && npm run build:client",
@@ -50,5 +50,8 @@
     "@emotion/styled": "^11.14.0",
     "@mui/lab": "^7.0.0-beta.13",
     "@mui/x-tree-view": "^8.5.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

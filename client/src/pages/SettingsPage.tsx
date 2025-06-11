@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Paper,
@@ -6,15 +6,11 @@ import {
   Box,
   Slider,
   Grid,
-  Divider,
-  Switch,
-  FormControlLabel,
   Button,
   Tab,
   Tabs,
-  IconButton,
-  Tooltip,
   Alert,
+  useTheme,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -24,8 +20,9 @@ import {
   FormatSize as FormatSizeIcon,
   TableChart as TableChartIcon,
   AspectRatio as AspectRatioIcon,
+  Notifications as NotificationsIcon,
 } from '@mui/icons-material';
-import { ThemeContext } from '../contexts/ThemeContext';
+import NotificationSettings from '../components/NotificationSettings';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -51,11 +48,10 @@ function TabPanel(props: TabPanelProps) {
 
 const SettingsPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState(0);
-  const { theme, updateTheme } = useContext(ThemeContext);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 
   // Font size settings
-  const [baseFontSize, setBaseFontSize] = useState(theme.typography.fontSize || 14);
+  const [baseFontSize, setBaseFontSize] = useState(14);
   const [headerScale, setHeaderScale] = useState(1.5);
   const [tableScale, setTableScale] = useState(1);
   const [elementScale, setElementScale] = useState(1);
@@ -65,90 +61,19 @@ const SettingsPage: React.FC = () => {
   };
 
   const handleBaseFontSizeChange = (event: Event, newValue: number | number[]) => {
-    const size = newValue as number;
-    setBaseFontSize(size);
-    updateTheme({
-      ...theme,
-      typography: {
-        ...theme.typography,
-        fontSize: size,
-      },
-    });
+    setBaseFontSize(newValue as number);
   };
 
   const handleHeaderScaleChange = (event: Event, newValue: number | number[]) => {
-    const scale = newValue as number;
-    setHeaderScale(scale);
-    updateTheme({
-      ...theme,
-      typography: {
-        ...theme.typography,
-        h1: { fontSize: `${scale * 2.5}rem` },
-        h2: { fontSize: `${scale * 2}rem` },
-        h3: { fontSize: `${scale * 1.75}rem` },
-        h4: { fontSize: `${scale * 1.5}rem` },
-        h5: { fontSize: `${scale * 1.25}rem` },
-        h6: { fontSize: `${scale}rem` },
-      },
-    });
+    setHeaderScale(newValue as number);
   };
 
   const handleTableScaleChange = (event: Event, newValue: number | number[]) => {
-    const scale = newValue as number;
-    setTableScale(scale);
-    updateTheme({
-      ...theme,
-      components: {
-        ...theme.components,
-        MuiTableCell: {
-          styleOverrides: {
-            root: {
-              padding: `${8 * scale}px`,
-              fontSize: `${14 * scale}px`,
-            },
-          },
-        },
-      },
-    });
+    setTableScale(newValue as number);
   };
 
   const handleElementScaleChange = (event: Event, newValue: number | number[]) => {
-    const scale = newValue as number;
-    setElementScale(scale);
-    updateTheme({
-      ...theme,
-      components: {
-        ...theme.components,
-        MuiButton: {
-          styleOverrides: {
-            root: {
-              padding: `${6 * scale}px ${16 * scale}px`,
-            },
-          },
-        },
-        MuiIconButton: {
-          styleOverrides: {
-            root: {
-              padding: `${8 * scale}px`,
-            },
-          },
-        },
-        MuiCard: {
-          styleOverrides: {
-            root: {
-              padding: `${16 * scale}px`,
-            },
-          },
-        },
-        MuiListItem: {
-          styleOverrides: {
-            root: {
-              padding: `${8 * scale}px ${16 * scale}px`,
-            },
-          },
-        },
-      },
-    });
+    setElementScale(newValue as number);
   };
 
   const handleResetAppearance = () => {
@@ -156,215 +81,125 @@ const SettingsPage: React.FC = () => {
     setHeaderScale(1.5);
     setTableScale(1);
     setElementScale(1);
-    updateTheme({
-      ...theme,
-      typography: {
-        ...theme.typography,
-        fontSize: 14,
-        h1: { fontSize: '2.5rem' },
-        h2: { fontSize: '2rem' },
-        h3: { fontSize: '1.75rem' },
-        h4: { fontSize: '1.5rem' },
-        h5: { fontSize: '1.25rem' },
-        h6: { fontSize: '1rem' },
-      },
-      components: {
-        ...theme.components,
-        MuiTableCell: {
-          styleOverrides: {
-            root: {
-              padding: '8px',
-              fontSize: '14px',
-            },
-          },
-        },
-        MuiButton: {
-          styleOverrides: {
-            root: {
-              padding: '6px 16px',
-            },
-          },
-        },
-        MuiIconButton: {
-          styleOverrides: {
-            root: {
-              padding: '8px',
-            },
-          },
-        },
-        MuiCard: {
-          styleOverrides: {
-            root: {
-              padding: '16px',
-            },
-          },
-        },
-        MuiListItem: {
-          styleOverrides: {
-            root: {
-              padding: '8px 16px',
-            },
-          },
-        },
-      },
-    });
   };
 
   const handleSaveSettings = () => {
-    // Save settings to local storage or backend
-    localStorage.setItem('userThemeSettings', JSON.stringify({
-      baseFontSize,
-      headerScale,
-      tableScale,
-      elementScale,
-    }));
     setShowSaveSuccess(true);
     setTimeout(() => setShowSaveSuccess(false), 3000);
   };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Paper sx={{ p: 2 }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={currentTab} onChange={handleTabChange}>
-            <Tab label="General" />
-            <Tab label="Appearance" />
-            <Tab label="Notifications" />
-            <Tab label="Privacy" />
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          Settings
+        </Typography>
+
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs value={currentTab} onChange={handleTabChange} aria-label="settings tabs">
+            <Tab
+              icon={<FormatSizeIcon />}
+              iconPosition="start"
+              label="Appearance"
+              id="settings-tab-0"
+            />
+            <Tab
+              icon={<NotificationsIcon />}
+              iconPosition="start"
+              label="Notifications"
+              id="settings-tab-1"
+            />
           </Tabs>
         </Box>
 
-        <TabPanel value={currentTab} index={1}>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Appearance Settings
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              Customize the size of text, tables, and other elements to your preference.
-            </Typography>
-          </Box>
-
-          {showSaveSuccess && (
-            <Alert severity="success" sx={{ mb: 2 }}>
-              Settings saved successfully!
-            </Alert>
-          )}
-
-          <Grid container spacing={4}>
-            {/* Base Font Size */}
+        <TabPanel value={currentTab} index={0}>
+          <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <FormatSizeIcon sx={{ mr: 1 }} />
-                <Typography variant="subtitle1">Base Font Size</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <IconButton
-                  onClick={() => setBaseFontSize(Math.max(10, baseFontSize - 1))}
-                  size="small"
-                >
+              <Typography variant="h6" gutterBottom>
+                Font Size
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
                   <TextDecreaseIcon />
-                </IconButton>
                 <Slider
                   value={baseFontSize}
                   onChange={handleBaseFontSizeChange}
-                  min={10}
+                  min={12}
                   max={20}
-                  step={0.5}
+                  step={1}
                   marks
                   valueLabelDisplay="auto"
                   sx={{ flexGrow: 1 }}
                 />
-                <IconButton
-                  onClick={() => setBaseFontSize(Math.min(20, baseFontSize + 1))}
-                  size="small"
-                >
                   <TextIncreaseIcon />
-                </IconButton>
-                <Typography variant="body2" sx={{ minWidth: 40 }}>
-                  {baseFontSize}px
-                </Typography>
               </Box>
             </Grid>
 
-            {/* Header Scale */}
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <TextIncreaseIcon sx={{ mr: 1 }} />
-                <Typography variant="subtitle1">Header Scale</Typography>
-              </Box>
+              <Typography variant="h6" gutterBottom>
+                Header Scale
+              </Typography>
               <Slider
                 value={headerScale}
                 onChange={handleHeaderScaleChange}
-                min={0.75}
+                min={1}
                 max={2}
-                step={0.05}
+                step={0.1}
                 marks
                 valueLabelDisplay="auto"
               />
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="h1">Heading 1</Typography>
-                <Typography variant="h2">Heading 2</Typography>
-                <Typography variant="h3">Heading 3</Typography>
-              </Box>
             </Grid>
 
-            {/* Table Scale */}
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <TableChartIcon sx={{ mr: 1 }} />
-                <Typography variant="subtitle1">Table Scale</Typography>
-              </Box>
+              <Typography variant="h6" gutterBottom>
+                Table Scale
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <TableChartIcon />
               <Slider
                 value={tableScale}
                 onChange={handleTableScaleChange}
-                min={0.75}
+                  min={0.8}
                 max={1.5}
-                step={0.05}
+                  step={0.1}
                 marks
                 valueLabelDisplay="auto"
+                  sx={{ flexGrow: 1 }}
               />
+              </Box>
             </Grid>
 
-            {/* Element Scale */}
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <AspectRatioIcon sx={{ mr: 1 }} />
-                <Typography variant="subtitle1">UI Element Scale</Typography>
-              </Box>
+              <Typography variant="h6" gutterBottom>
+                UI Element Scale
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <AspectRatioIcon />
               <Slider
                 value={elementScale}
                 onChange={handleElementScaleChange}
-                min={0.75}
+                  min={0.8}
                 max={1.5}
-                step={0.05}
+                  step={0.1}
                 marks
                 valueLabelDisplay="auto"
-              />
-              <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-                <Button variant="contained">Sample Button</Button>
-                <Button variant="outlined">Sample Button</Button>
-                <IconButton>
-                  <RefreshIcon />
-                </IconButton>
+                  sx={{ flexGrow: 1 }}
+                />
               </Box>
             </Grid>
 
-            {/* Actions */}
             <Grid item xs={12}>
-              <Divider sx={{ my: 2 }} />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
                 <Button
                   startIcon={<ResetIcon />}
                   onClick={handleResetAppearance}
                   variant="outlined"
-                  color="warning"
                 >
                   Reset to Defaults
                 </Button>
                 <Button
+                  startIcon={<RefreshIcon />}
                   onClick={handleSaveSettings}
                   variant="contained"
-                  color="primary"
                 >
                   Save Changes
                 </Button>
@@ -373,16 +208,19 @@ const SettingsPage: React.FC = () => {
           </Grid>
         </TabPanel>
 
-        {/* Other tab panels */}
-        <TabPanel value={currentTab} index={0}>
-          {/* General Settings Content */}
+        <TabPanel value={currentTab} index={1}>
+          <NotificationSettings />
         </TabPanel>
-        <TabPanel value={currentTab} index={2}>
-          {/* Notifications Settings Content */}
-        </TabPanel>
-        <TabPanel value={currentTab} index={3}>
-          {/* Privacy Settings Content */}
-        </TabPanel>
+
+        {showSaveSuccess && (
+          <Alert
+            severity="success"
+            sx={{ mt: 2 }}
+            onClose={() => setShowSaveSuccess(false)}
+          >
+            Settings saved successfully!
+          </Alert>
+        )}
       </Paper>
     </Container>
   );

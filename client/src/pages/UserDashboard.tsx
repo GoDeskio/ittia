@@ -3,6 +3,7 @@ import { Container, Paper, Typography, Box, Grid } from '@mui/material';
 import AudioRecorder from '../components/AudioRecorder';
 import AudioProcessingService from '../services/AudioProcessingService';
 import Sidebar from '../components/shared/Sidebar';
+import VirtualAssistant from '../components/VirtualAssistant';
 
 const UserDashboard: React.FC = () => {
   const [recordingStatus, setRecordingStatus] = useState<string>('');
@@ -87,9 +88,23 @@ const UserDashboard: React.FC = () => {
                 </Typography>
               </Paper>
             </Grid>
+
+            <Grid item xs={12}>
+              <Paper sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  Need Help?
+                </Typography>
+                <Typography variant="body1">
+                  Click the assistant icon in the bottom right corner to get help with any questions you have about the platform.
+                </Typography>
+              </Paper>
+            </Grid>
           </Grid>
         </Container>
       </Box>
+      
+      {/* Virtual Assistant */}
+      <VirtualAssistant />
     </Box>
   );
 };

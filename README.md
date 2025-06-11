@@ -1,361 +1,314 @@
 # VoiceVault
 
-VoiceVault is a sophisticated voice recognition and management system that allows users to record, analyze, and organize voice samples with advanced features including emotion detection, speaker identification, and comprehensive organization tools.
+A modern voice-based authentication and management system with AI-powered features.
 
 ## Table of Contents
-1. [Glossary](#1-glossary)
-2. [Features](#2-features)
-3. [Technical Stack](#3-technical-stack)
-4. [Prerequisites](#4-prerequisites)
-5. [Installation Guide](#5-installation-guide)
-6. [Configuration](#6-configuration)
-7. [Running the Application](#7-running-the-application)
-8. [Development Scripts](#8-development-scripts)
-9. [Troubleshooting](#9-troubleshooting)
-10. [License](#10-license)
-11. [Contact](#11-contact)
+- [Prerequisites](#prerequisites)
+- [Local Development Setup](#local-development-setup)
+- [Docker Setup](#docker-setup)
+- [GitLab Setup](#gitlab-setup)
+- [Kubernetes Deployment](#kubernetes-deployment)
+- [CI/CD Pipeline](#cicd-pipeline)
+- [Monitoring and Maintenance](#monitoring-and-maintenance)
+- [Critical Security Changes for Production](#critical-security-changes-for-production)
 
-## 1. Glossary
+## Prerequisites
 
-- **Voice Recognition**: Technology that identifies and authenticates individual speakers
-- **Emotion Detection**: Analysis of voice patterns to determine emotional states
-- **Speaker Identification**: Process of determining who is speaking
-- **RBAC**: Role-Based Access Control system for security management
-- **Voice Pattern Analysis**: Statistical analysis of voice characteristics
-- **Redis**: In-memory data structure store used as cache
-- **PostgreSQL**: Primary database for persistent storage
-
-## 2. Features
-
-- **Voice Recognition**: Advanced speaker identification and verification
-- **Emotion Detection**: 91 distinct emotions across 13 categories
-- **Organization System**: Hierarchical folders and comprehensive tagging
-- **Real-time Processing**: Immediate voice analysis and categorization
-- **Security**: Role-based access control and encryption
-- **Analytics**: Comprehensive voice pattern analysis
-
-## 3. Technical Stack
-
-### Frontend
-- React 18+
-- TypeScript 4.9+
-- Material-UI (MUI) v5
-- Chakra UI v3.20+
-- Emotion (styling) v11.14+
-
-### Backend
-- Node.js (v18+)
-- Express
-- TypeScript 4.9+
-
-### Infrastructure
-- PostgreSQL v14+
-- Redis v6+
-- Docker (optional)
-
-## 4. Prerequisites
-
-Before installation, ensure you have the following installed:
-
-- Node.js (v18 or higher)
-- PostgreSQL (v14 or higher)
-- Redis (v6 or higher)
-- Docker (optional, for containerization)
+### Development Tools
+- Node.js (v18 or later)
+- npm (v8 or later)
 - Git
-- npm or yarn (latest stable version)
+- Docker Desktop
+- kubectl CLI
+- GitLab account
 
-## 5. Installation Guide
+### Cloud Infrastructure
+- Kubernetes cluster (v1.19+)
+- Container Registry access
+- Domain name (for production)
+
+### Access and Credentials
+- GitLab account with repository access
+- Kubernetes cluster access credentials
+- Container registry credentials
+
+## Local Development Setup
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/voicevault.git
+git clone https://gitlab.com/your-username/voicevault.git
 cd voicevault
 ```
 
 2. Install dependencies:
 ```bash
-# Windows
-install-dependencies.bat
-
-# Unix/Linux/Mac
-./install-dependencies.sh
-
-# Alternative manual installation
+# Install root dependencies
 npm install
+
+# Install client dependencies
 cd client && npm install
-cd ../server && npm install
-cd ../shared && npm install
+cd ..
+
+# Install server dependencies
+cd server && npm install
+cd ..
+
+# Install shared dependencies
+cd shared && npm install
+cd ..
 ```
 
-## 6. Configuration
-
-1. Set up environment variables:
+3. Set up environment variables:
 ```bash
-# Copy environment template files
+# Copy example env files
 cp .env.example .env
-cd client && cp .env.example .env
-cd ../server && cp .env.example .env
+cp client/.env.example client/.env
+cp server/.env.example server/.env
 ```
 
-2. Configure the following in your .env files:
-```plaintext
-# Server .env
-PORT=3000
-DATABASE_URL=postgresql://username:password@localhost:5432/voicevault
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=your_jwt_secret
-
-# Client .env
-VITE_API_URL=http://localhost:3000
-```
-
-## 7. Running the Application
-
-### Development Mode
+4. Start development servers:
 ```bash
-# Start both client and server
+# Start all services
 npm run dev
-
-# Start server only
-npm run dev:server
-
-# Start client only
-npm run dev:client
 ```
 
-### Production Mode
+## Docker Setup
+
+1. Build and run with Docker Compose (development):
 ```bash
-# Build the application
-npm run build
+# Build and start services
+docker-compose up --build
 
-# Start the production server
-npm start
+# Run in detached mode
+docker-compose up -d
+
+# Stop services
+docker-compose down
 ```
 
-## 8. Development Scripts
-
+2. Build production image:
 ```bash
-# Run tests
-npm test                  # Run all tests
-npm run test:server      # Run server tests
-npm run test:client      # Run client tests
-
-# Build the application
-npm run build            # Build both client and server
-npm run build:server     # Build server only
-npm run build:client     # Build client only
-
-# Development
-npm run dev              # Start development servers
+docker build -t voicevault:latest .
 ```
 
-## 9. Troubleshooting
+## GitLab Setup
 
-Common issues and solutions:
+1. Create a new GitLab repository:
+   - Go to GitLab.com
+   - Click "New Project"
+   - Choose "Create blank project"
+   - Name it "voicevault"
+   - Set visibility level (recommended: Private)
 
-1. **Port Already in Use**
+2. Push existing repository:
 ```bash
-# Windows
-netstat -ano | findstr :3000
-taskkill /PID <PID> /F
-
-# Unix/Linux/Mac
-lsof -i :3000
-kill -9 <PID>
+git remote add gitlab https://gitlab.com/your-username/voicevault.git
+git push -u gitlab main
 ```
 
-2. **Database Connection Issues**
-- Verify PostgreSQL is running
-- Check database credentials in .env
-- Ensure database exists:
+3. Set up GitLab Container Registry:
+   - Navigate to your project's "Packages & Registries" > "Container Registry"
+   - Note down the registry path
+
+4. Configure GitLab CI/CD Variables:
+   - Go to Settings > CI/CD > Variables
+   - Add the following variables:
+     - `KUBE_CONFIG` (Base64 encoded kubeconfig file)
+     - `DOCKER_REGISTRY_USER`
+     - `DOCKER_REGISTRY_PASSWORD`
+     - `DOCKER_REGISTRY_URL`
+     - `DATABASE_URL`
+     - `REDIS_URL`
+
+## Kubernetes Deployment
+
+1. Create Kubernetes namespace:
 ```bash
-psql -U postgres
-CREATE DATABASE voicevault;
+kubectl apply -f k8s/namespace.yaml
 ```
 
-3. **Redis Connection Issues**
-- Verify Redis server is running
-- Check Redis connection string in .env
+2. Create secrets:
+```bash
+# Create base64 encoded secrets
+echo -n 'your-database-url' | base64
+echo -n 'your-redis-url' | base64
 
-## 10. License
-
-This software is protected by copyright law and international treaties. Unauthorized reproduction or distribution of this software, or any portion of it, may result in severe civil and criminal penalties.
-
-Copyright © 2024 Dustin Pennington. All rights reserved.
-
-## 11. Contact
-
-For any inquiries about this project, please contact:
-
-Dustin Pennington
-- Project Creator & Lead Developer
-- [Contact Information]
-
----
-
-## Contributing
-
-For development team members, please follow these guidelines:
-
-1. Create feature branches from `develop`
-2. Follow the conventional commits specification
-3. Include tests for new features
-4. Update documentation as needed
-5. Submit PRs against the `develop` branch
-
-## Project Status
-
-Active Development - Version 1.0.0
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.com/destop1/ittia.git
-git branch -M main
-git push -uf origin main
+# Update k8s/secrets.yaml with encoded values
+kubectl apply -f k8s/secrets.yaml
 ```
 
-## Integrate with your tools
+3. Deploy application:
+```bash
+# Apply Kubernetes configurations
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
 
-- [ ] [Set up project integrations](https://gitlab.com/destop1/ittia/-/settings/integrations)
+# Verify deployment
+kubectl get pods -n voicevault
+kubectl get services -n voicevault
+```
 
-## Collaborate with your team
+## CI/CD Pipeline
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+Create `.gitlab-ci.yml` in your repository:
 
-## Test and Deploy
+```yaml
+stages:
+  - build
+  - test
+  - deploy
 
-Use the built-in continuous integration in GitLab.
+variables:
+  DOCKER_REGISTRY: $DOCKER_REGISTRY_URL
+  DOCKER_IMAGE: $DOCKER_REGISTRY_URL/$CI_PROJECT_PATH
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY
+    - docker build -t $DOCKER_IMAGE:$CI_COMMIT_SHA .
+    - docker push $DOCKER_IMAGE:$CI_COMMIT_SHA
+    - docker tag $DOCKER_IMAGE:$CI_COMMIT_SHA $DOCKER_IMAGE:latest
+    - docker push $DOCKER_IMAGE:latest
 
-***
+test:
+  stage: test
+  image: node:18-alpine
+  script:
+    - npm install
+    - npm run test
 
-# Editing this README
+deploy:
+  stage: deploy
+  image: 
+    name: bitnami/kubectl:latest
+    entrypoint: ['']
+  script:
+    - echo "$KUBE_CONFIG" | base64 -d > kubeconfig.yaml
+    - export KUBECONFIG=kubeconfig.yaml
+    - kubectl apply -f k8s/namespace.yaml
+    - kubectl apply -f k8s/secrets.yaml
+    - |
+      cat <<EOF > k8s/deployment.yaml
+      $(cat k8s/deployment.yaml | sed "s|voicevault:latest|$DOCKER_IMAGE:$CI_COMMIT_SHA|g")
+      EOF
+    - kubectl apply -f k8s/deployment.yaml
+    - kubectl apply -f k8s/service.yaml
+  only:
+    - main
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Monitoring and Maintenance
 
-## Suggestions for a good README
+### Health Checks
+Monitor application health:
+```bash
+# Check pod status
+kubectl get pods -n voicevault
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+# View pod logs
+kubectl logs -f <pod-name> -n voicevault
 
-## Name
-Choose a self-explaining name for your project.
+# Check service status
+kubectl get services -n voicevault
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### Scaling
+Scale the application:
+```bash
+# Scale replicas
+kubectl scale deployment voicevault -n voicevault --replicas=5
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+# Auto-scaling (if configured)
+kubectl get hpa -n voicevault
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Updates and Rollbacks
+```bash
+# Update deployment
+kubectl set image deployment/voicevault voicevault=$DOCKER_IMAGE:new-tag -n voicevault
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+# Rollback deployment
+kubectl rollout undo deployment/voicevault -n voicevault
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## Architecture
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+The application consists of several components:
+- Frontend (React.js)
+- Backend API (Node.js/Express)
+- PostgreSQL database
+- Redis cache
+- Voice processing services
+- AI conversation services
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### System Requirements
+- CPU: Minimum 2 cores recommended
+- Memory: Minimum 4GB RAM
+- Storage: 20GB+ for application and databases
+- Network: Stable internet connection with minimum 10Mbps
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Support and Documentation
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+For additional support:
+- Check the [GitLab repository issues](https://gitlab.com/your-username/voicevault/issues)
+- Review the [API Documentation](./docs/api.md)
+- Contact the development team
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+[Your License Type] - See LICENSE file for details
 
-## Adding External Code
+## Critical Security Changes for Production
 
-### NPM Packages
+Before deploying to production, the following security issues must be addressed:
 
-To add new NPM packages:
+### Client-Side Security Issues
 
-```bash
-# Client-side dependencies
-cd client
-npm install package-name
+1. High Severity:
+   - Package: `svgo` (SVG optimization tool)
+   - Issue: Inefficient Regular Expression Complexity in `nth-check`
+   - Impact: Potential ReDoS (Regular Expression Denial of Service) attacks
+   - Fix: Update `svgo` and its dependencies when a patched version is available
 
-# Server-side dependencies
-cd server
-npm install package-name
-```
+2. Moderate Severity:
+   - Package: `postcss` (< 8.4.31)
+   - Issue: Line return parsing vulnerability
+   - Fix: Update to latest version when compatible with other dependencies
 
-### Environment Variables
+3. Moderate Severity:
+   - Package: `webpack-dev-server`
+   - Issue: Potential source code exposure in non-Chromium browsers
+   - Fix: Update to latest version when compatible
 
-1. Copy the example environment file:
-```bash
-cp .env.example .env
-```
+### Server-Side Security Issues
 
-2. Update the variables in `.env` with your values
+1. Low Severity:
+   - Packages: `brace-expansion`, `minimatch`, and TypeScript/ESLint related tools
+   - Issue: Regular Expression Denial of Service vulnerabilities
+   - Impact: Development tools only, no production impact
+   - Fix: Update development dependencies when compatible versions are available
 
-### Shared Code
+### Security Recommendations
 
-Place shared code in the `shared/` directory:
-```
-shared/
-  ├── types/        # Shared TypeScript types
-  ├── utils/        # Shared utility functions
-  └── constants/    # Shared constants
-```
+1. Production Deployment:
+   - Use `npm ci` instead of `npm install` to ensure exact dependency versions
+   - This prevents automatic updates to potentially vulnerable packages
 
-### External Services
+2. Dependency Management:
+   - Create a separate task to test dependency updates
+   - Test thoroughly in staging environment before production updates
+   - Keep track of security advisories for critical dependencies
 
-1. Add service configuration to `.env`:
-```
-EXTERNAL_SERVICE_API_KEY=your_api_key
-EXTERNAL_SERVICE_URL=https://api.service.com
-```
+3. Regular Audits:
+   - Run `npm audit` regularly to check for new vulnerabilities
+   - Document all known issues and their mitigation strategies
+   - Prioritize fixing high and moderate severity issues
 
-2. Add service configuration to `server/src/config/`:
-```typescript
-export const externalServiceConfig = {
-  apiKey: process.env.EXTERNAL_SERVICE_API_KEY,
-  url: process.env.EXTERNAL_SERVICE_URL
-};
-```
-
-### Best Practices
-
-1. Always document new dependencies in this README
-2. Add appropriate type definitions
-3. Include tests for external code integration
-4. Keep dependencies updated
-5. Review security implications
-6. Check license compatibility
-
-### Current External Dependencies
-
-- React
-- Material-UI
-- Express
-- MongoDB
-- TypeScript
-- [Add new dependencies here]
+4. Build Process:
+   - Ensure production builds exclude development dependencies
+   - Use proper environment variables for production configuration
+   - Implement Content Security Policy (CSP) headers

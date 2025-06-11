@@ -6,17 +6,17 @@ import dotenv from 'dotenv';
 import path from 'path';
 import app from './app';
 import { initializeBackupCron } from './cron/backupCron';
+import authRoutes from './routes/auth';
+import userRoutes from './routes/user';
 
 // Routes
-import { authRoutes } from './routes/auth';
 import { emotionRoutes } from './routes/emotion';
-import { userRoutes } from './routes/user';
 import { audioRoutes } from './routes/audio';
 
 // Load environment variables
 dotenv.config();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 // Middleware
 app.use(helmet());

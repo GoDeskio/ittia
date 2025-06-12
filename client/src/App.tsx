@@ -5,6 +5,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { useTheme } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
+import Registration from './pages/Registration';
+import ForgotCredentials from './pages/ForgotCredentials';
 import Dashboard from './pages/Dashboard';
 import Settings from './pages/Settings';
 import AdminDashboard from './pages/AdminDashboard';
@@ -16,6 +18,8 @@ import AboutPage from './pages/AboutPage';
 import SettingsPage from './pages/SettingsPage';
 import Layout from './components/Layout';
 import CyborgLoadingPage from './pages/CyborgLoadingPage';
+import AdminRoute from './components/AdminRoute';
+import PrivateRoute from './components/PrivateRoute';
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -53,16 +57,6 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, token } = useAuth();
-
-  if (!isAuthenticated || !token) {
-    return <Navigate to="/login" />;
-  }
-
-  return <>{children}</>;
-};
-
 const AppContent: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
@@ -86,8 +80,10 @@ const AppContent: React.FC = () => {
           <div className="App">
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Registration />} />
+              <Route path="/forgot-credentials" element={<ForgotCredentials />} />
               <Route
-                path="/"
+                path="/dashboard/*"
                 element={
                   <PrivateRoute>
                     <Dashboard />
@@ -105,13 +101,21 @@ const AppContent: React.FC = () => {
               <Route
                 path="/admin"
                 element={
-                  <PrivateRoute>
+                  <AdminRoute>
                     {user?.authMethods.admin ? (
                       <AdminDashboard />
                     ) : (
                       <Navigate to="/" />
                     )}
-                  </PrivateRoute>
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/god"
+                element={
+                  <AdminRoute requiredRole="god">
+                    <AdminDashboard />
+                  </AdminRoute>
                 }
               />
               <Route
@@ -140,6 +144,7 @@ const AppContent: React.FC = () => {
                   <CyborgLoadingPage />
                 </Layout>
               } />
+              <Route path="/" element={<Navigate to="/login" replace />} />
             </Routes>
 
             {/* Error reporting dialog for unhandled errors */}

@@ -18,6 +18,7 @@ import {
   CardContent,
   IconButton,
   Tooltip,
+  Tabs,
 } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import Tab from '@mui/material/Tab';
@@ -27,12 +28,18 @@ import {
   Storage as StorageIcon,
   People as PeopleIcon,
   Assessment as AssessmentIcon,
+  Settings as SettingsIcon,
+  Palette as PaletteIcon,
+  SupervisorAccount as SupervisorAccountIcon,
+  Security as SecurityIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import IconManagement from '../components/IconManagement';
 import UserManagement from '../components/UserManagement';
 import UploadSettings from '../components/UploadSettings';
+import { StyledCard } from '../components/shared/StyledComponents';
+import NeumorphicStyleEditor from '../components/admin/NeumorphicStyleEditor';
 
 interface SystemStats {
   totalUsers: number;
@@ -63,6 +70,39 @@ interface UserStats {
   totalLibrarySize: number;
 }
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`admin-tabpanel-${index}`}
+      aria-labelledby={`admin-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `admin-tab-${index}`,
+    'aria-controls': `admin-tabpanel-${index}`,
+  };
+}
+
 const AdminDashboard: React.FC = () => {
   const { token } = useAuth();
   const [stats, setStats] = useState<SystemStats | null>(null);
@@ -71,7 +111,7 @@ const AdminDashboard: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [userActivity, setUserActivity] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState('1');
+  const [tabValue, setTabValue] = React.useState(0);
 
   useEffect(() => {
     fetchData();
@@ -135,8 +175,8 @@ const AdminDashboard: React.FC = () => {
     return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${sizes[i]}`;
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    setActiveTab(newValue);
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
   };
 
   if (loading) {
@@ -147,7 +187,7 @@ const AdminDashboard: React.FC = () => {
     <Container maxWidth="xl">
       <Box sx={{ py: 4 }}>
         <Typography variant="h4" gutterBottom>
-          God Mode Dashboard
+          Admin Dashboard
         </Typography>
 
         {error && (
@@ -156,24 +196,48 @@ const AdminDashboard: React.FC = () => {
           </Alert>
         )}
 
-        <TabContext value={activeTab}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList onChange={handleTabChange}>
-              <Tab label="User Management" value="1" />
-              <Tab label="Upload Settings" value="2" />
-              <Tab label="Icon Management" value="3" />
-            </TabList>
-          </Box>
-          <TabPanel value="1">
+        <StyledCard>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="admin dashboard tabs"
+            variant="scrollable"
+            scrollButtons="auto"
+          >
+            <Tab icon={<PaletteIcon />} label="UI Customization" {...a11yProps(0)} />
+            <Tab icon={<SupervisorAccountIcon />} label="User Management" {...a11yProps(1)} />
+            <Tab icon={<SecurityIcon />} label="Security" {...a11yProps(2)} />
+            <Tab icon={<SettingsIcon />} label="System Settings" {...a11yProps(3)} />
+          </Tabs>
+
+          <TabPanel value={tabValue} index={0}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom>
+                  UI Customization
+                </Typography>
+                <Typography variant="body2" color="textSecondary" paragraph>
+                  Customize the application's neumorphic design system. Changes will be applied globally across all user interfaces.
+                </Typography>
+                <NeumorphicStyleEditor />
+              </Grid>
+            </Grid>
+          </TabPanel>
+
+          <TabPanel value={tabValue} index={1}>
             <UserManagement />
           </TabPanel>
-          <TabPanel value="2">
-            <UploadSettings />
+
+          <TabPanel value={tabValue} index={2}>
+            <Typography variant="h6">Security Settings</Typography>
+            {/* Add security settings components here */}
           </TabPanel>
-          <TabPanel value="3">
-            <IconManagement />
+
+          <TabPanel value={tabValue} index={3}>
+            <Typography variant="h6">System Settings</Typography>
+            {/* Add system settings components here */}
           </TabPanel>
-        </TabContext>
+        </StyledCard>
 
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} md={3}>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography, styled } from '@mui/material';
-import { Login as LoginIcon } from '@mui/icons-material';
+import { Email as EmailIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import {
   NeumorphicCard,
@@ -25,24 +25,23 @@ const StyledForm = styled(Box)(({ theme }) => ({
   gap: theme.spacing(3),
 }));
 
-const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const ForgotCredentials: React.FC = () => {
+  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError('');
+    setMessage('');
 
     try {
-      // TODO: Implement login API call
+      // TODO: Implement API call to send credentials
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulated API call
-      navigate('/dashboard');
+      setMessage('If an account exists with this email, we will send the credentials shortly.');
     } catch (error) {
-      setError('Invalid username or password');
+      setMessage('An error occurred. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
@@ -54,63 +53,49 @@ const Login: React.FC = () => {
         <StyledForm component="form" onSubmit={handleSubmit}>
           <Box sx={{ textAlign: 'center', mb: 2 }}>
             <NeumorphicIcon size={48}>
-              <LoginIcon />
+              <EmailIcon />
             </NeumorphicIcon>
             <Typography variant="h5" sx={{ mt: 2 }}>
-              Welcome Back
+              Forgot Credentials
             </Typography>
             <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-              Please sign in to continue
+              Enter your email address and we'll send you your username and password.
             </Typography>
           </Box>
 
           <NeumorphicInput
             fullWidth
-            label="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            label="Email Address"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
 
-          <NeumorphicInput
-            fullWidth
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
             <NeumorphicButton
               fullWidth
               variant="contained"
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Signing In...' : 'Sign In'}
+              {isSubmitting ? 'Sending...' : 'Send Credentials'}
             </NeumorphicButton>
             <NeumorphicButton
               variant="outlined"
-              onClick={() => navigate('/register')}
+              onClick={() => navigate('/login')}
             >
-              Register
+              Back
             </NeumorphicButton>
           </Box>
 
-          <Box sx={{ textAlign: 'center' }}>
-            <NeumorphicButton
-              variant="text"
-              onClick={() => navigate('/forgot-credentials')}
-              sx={{ textTransform: 'none' }}
+          {message && (
+            <Typography
+              color={message.includes('error') ? 'error' : 'success'}
+              textAlign="center"
+              variant="body2"
             >
-              Forgot Username or Password?
-            </NeumorphicButton>
-          </Box>
-
-          {error && (
-            <Typography color="error" textAlign="center" variant="body2">
-              {error}
+              {message}
             </Typography>
           )}
         </StyledForm>
@@ -119,4 +104,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login; 
+export default ForgotCredentials; 

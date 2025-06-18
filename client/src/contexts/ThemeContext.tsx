@@ -52,6 +52,8 @@ interface ThemeContextType {
   bannerImage?: BannerImage;
   updateBanner: (banner: Partial<BannerImage> & { file?: File }) => Promise<void>;
   isCurrentUser: (userId: string) => boolean;
+  currentTheme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 const defaultColors: StylePreferences = {
@@ -91,6 +93,8 @@ const ThemeContext = createContext<ThemeContextType>({
   animationSettings: defaultAnimationSettings,
   updateBanner: async () => {},
   isCurrentUser: () => false,
+  currentTheme: 'light',
+  toggleTheme: () => {},
 });
 
 export const useTheme = () => {
@@ -107,6 +111,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [neumorphicSettings, setNeumorphicSettings] = useState(defaultNeumorphicSettings);
   const [animationSettings, setAnimationSettings] = useState(defaultAnimationSettings);
   const [bannerImage, setBannerImage] = useState<BannerImage>();
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return (savedTheme as 'light' | 'dark') || 'light';
+  });
 
   useEffect(() => {
     if (user) {
@@ -119,6 +127,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         .catch(console.error);
     }
   }, [user]);
+
+  useEffect(() => {
+    localStorage.setItem('theme', currentTheme);
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  }, [currentTheme]);
 
   const updateColors = useCallback(async (newColors: Partial<StylePreferences>) => {
     if (!user) {
@@ -168,6 +181,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const isCurrentUser = (userId: string): boolean => {
     return user?.id === userId;
+  };
+
+  const toggleTheme = () => {
+    setCurrentTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
   const theme = createTheme({
@@ -225,6 +242,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         bannerImage,
         updateBanner,
         isCurrentUser,
+        currentTheme,
+        toggleTheme,
       }}
     >
       <MuiThemeProvider theme={theme}>

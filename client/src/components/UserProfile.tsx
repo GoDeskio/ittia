@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -7,79 +7,152 @@ import {
   Box,
   Chip,
   Divider,
-  Paper
+  Paper,
+  Button,
+  IconButton,
+  Tooltip,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import AudioSamplePlayer from './shared/AudioSamplePlayer';
+import ShareIcon from '@mui/icons-material/Share';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 
+// Props interface for the UserProfile component
 interface UserProfileProps {
-  user: {
-    id: string;
-    name: string;
-    age: number;
-    hobbies: string[];
-    avatarUrl?: string;
-    bio?: string;
-    location?: string;
-    voiceSampleUrl?: string;
-  };
+  userId: string;      // The ID of the user whose profile is being displayed
+  isPublic?: boolean;  // Flag indicating if this is a public profile view
 }
 
-export const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
+/**
+ * UserProfile Component
+ * 
+ * Displays a user's public profile with their voice library information.
+ * Features:
+ * - User avatar and name display
+ * - QR code for voice library connection
+ * - Share functionality for the profile
+ * - Responsive design with theme support
+ */
+const UserProfile: React.FC<UserProfileProps> = ({ userId, isPublic = false }) => {
+  // Theme and auth context hooks
+  const { currentTheme } = useTheme();
+  const { user } = useAuth();
+  
+  // State for share notification
+  const [showShareAlert, setShowShareAlert] = useState(false);
+
+  /**
+   * Handles sharing the profile
+   * Uses Web Share API if available, falls back to clipboard copy
+   */
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        // Use native share dialog on supported devices
+        await navigator.share({
+          title: `${user?.username}'s Voice Library`,
+          text: 'Check out my voice library on VoiceVault!',
+          url: window.location.href,
+        });
+      } else {
+        // Fallback to clipboard copy
+        await navigator.clipboard.writeText(window.location.href);
+        setShowShareAlert(true);
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
   return (
-    <Paper elevation={3} sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
-      <Card>
-        <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <Avatar
-              src={user.avatarUrl}
-              alt={user.name}
-              sx={{ width: 80, height: 80, mr: 2 }}
-            />
-            <Box>
-              <Typography variant="h5" component="h1" gutterBottom>
-                {user.name}
-              </Typography>
-              {user.location && (
-                <Typography variant="body2" color="text.secondary">
-                  📍 {user.location}
-                </Typography>
-              )}
+    // Main profile container with theme-aware background
+    <Box
+      sx={{
+        p: 3,
+        bgcolor: currentTheme === 'dark' ? 'background.paper' : 'background.default',
+      }}
+    >
+      {/* Profile content card */}
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 2,
+        }}
+      >
+        {/* User avatar with initials */}
+        <Avatar
+          sx={{
+            width: 100,
+            height: 100,
+            bgcolor: 'primary.main',
+            fontSize: '2rem',
+          }}
+        >
+          {user?.username?.charAt(0).toUpperCase()}
+        </Avatar>
+
+        {/* User's library name */}
+        <Typography variant="h4" component="h1">
+          {user?.username}'s Voice Library
+        </Typography>
+
+        {/* QR code section */}
+        {user?.qrCode && (
+          <Box sx={{ textAlign: 'center' }}>
+            {/* QR code display container */}
+            <Paper
+              elevation={2}
+              sx={{
+                p: 2,
+                display: 'inline-block',
+                bgcolor: 'white',
+                mb: 2,
+              }}
+            >
+              <img
+                src={user.qrCode}
+                alt="Voice Library QR Code"
+                style={{ width: '200px', height: '200px' }}
+              />
+            </Paper>
+            
+            {/* Share button container */}
+            <Box sx={{ mt: 2 }}>
+              <Button
+                variant="contained"
+                startIcon={<ShareIcon />}
+                onClick={handleShare}
+              >
+                Share Library
+              </Button>
             </Box>
           </Box>
+        )}
 
-          {user.bio && (
-            <Typography variant="body1" paragraph>
-              {user.bio}
-            </Typography>
-          )}
+        {/* Connection instructions */}
+        <Typography variant="body1" color="text.secondary" align="center">
+          Connect to this voice library by scanning the QR code or using the share button.
+        </Typography>
+      </Paper>
 
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              Hobbies
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {user.hobbies.map((hobby, index) => (
-                <Chip key={index} label={hobby} size="small" />
-              ))}
-            </Box>
-          </Box>
-
-          <Divider sx={{ my: 2 }} />
-
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              Voice Sample
-            </Typography>
-            <AudioSamplePlayer
-              userName={user.name}
-              age={user.age}
-              hobbies={user.hobbies}
-              audioUrl={user.voiceSampleUrl}
-            />
-          </Box>
-        </CardContent>
-      </Card>
-    </Paper>
+      {/* Share success notification */}
+      <Snackbar
+        open={showShareAlert}
+        autoHideDuration={3000}
+        onClose={() => setShowShareAlert(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="success" onClose={() => setShowShareAlert(false)}>
+          Profile link copied to clipboard
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 };
 

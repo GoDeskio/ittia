@@ -7,6 +7,10 @@ import { User } from '../models/User';
 import { authConfig } from '../config/auth.config';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
+import { pool } from '../db';
+import QRCode from 'qrcode';
+import { generateApiToken } from '../utils/tokenGenerator';
 
 const router = express.Router();
 const authService = new AuthService();
@@ -175,38 +179,99 @@ router.post('/logout', passport.authenticate('jwt', { session: false }), async (
   res.json({ message: 'Logged out successfully' });
 });
 
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', async (req, res) => {
+  const { email, password, name } = req.body;
+
   try {
-    const { name, email, password } = req.body;
-    
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: 'Email already registered' });
-    }
-
-    const user = new User({
-      name,
-      email,
-      password
-    });
-
-    await user.save();
-
-    const token = jwt.sign(
-      { _id: user._id },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '7d' }
+    // Check if user already exists
+    const userCheck = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
     );
 
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      profilePicture: user.profilePicture,
-      token
-    });
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    // Generate API token
+    const apiToken = generateApiToken();
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Start transaction
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Create user
+      const userResult = await client.query(
+        `INSERT INTO users (email, password, name, api_token)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id, email, name, api_token`,
+        [email, hashedPassword, name, apiToken]
+      );
+
+      const user = userResult.rows[0];
+
+      // Create default voice library
+      const libraryResult = await client.query(
+        `INSERT INTO voice_libraries (name, owner, api_key, token, is_public)
+         VALUES ($1, $2, $3, $4, true)
+         RETURNING id, name, api_key, token`,
+        [`${name}'s Voice Library`, user.id, apiToken, apiToken]
+      );
+
+      const library = libraryResult.rows[0];
+
+      // Generate QR code
+      const qrCodeData = {
+        type: 'voicevault_library',
+        libraryId: library.id,
+        apiToken: apiToken,
+        owner: name,
+        timestamp: new Date().toISOString()
+      };
+
+      const qrCode = await QRCode.toDataURL(JSON.stringify(qrCodeData), {
+        errorCorrectionLevel: 'H',
+        margin: 1,
+        width: 400
+      });
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '24h' }
+      );
+
+      await client.query('COMMIT');
+
+      res.status(201).json({
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name
+        },
+        token,
+        library: {
+          id: library.id,
+          name: library.name,
+          apiToken: library.api_key
+        },
+        qrCode
+      });
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error in registration:', error);
+    res.status(500).json({ error: 'Failed to register user' });
   }
 });
 

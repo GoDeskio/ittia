@@ -1,6 +1,6 @@
 # VoiceVault
 
-A secure voice recording and management application with advanced AI-powered features.
+A secure voice recording and management application with advanced AI-powered features and cross-platform synchronization.
 
 ## Features
 
@@ -10,6 +10,7 @@ A secure voice recording and management application with advanced AI-powered fea
 - Access control
 - Voice library management
 - API token authentication
+- Cross-platform synchronization
 
 ### Advanced Audio Processing
 - Real-time voice analysis
@@ -23,8 +24,10 @@ A secure voice recording and management application with advanced AI-powered fea
 ### Cross-Platform Support
 - Web application
 - Desktop client
-- Mobile app
+- Mobile app (iOS & Android)
 - Responsive design
+- Automatic data synchronization
+- Offline support
 
 ### Smart Organization
 - Voice library management
@@ -32,6 +35,7 @@ A secure voice recording and management application with advanced AI-powered fea
 - API token management
 - Voice library connections
 - Share functionality
+- Cross-platform data sync
 
 ## System Requirements
 
@@ -52,6 +56,8 @@ A secure voice recording and management application with advanced AI-powered fea
 - iOS 13+ or Android 8+
 - Camera and microphone permissions
 - Biometric authentication support
+- 2GB RAM minimum
+- 500MB free storage
 
 ## Installation
 
@@ -110,7 +116,16 @@ cd mobile-client
 npm install
 ```
 
-2. Build the application:
+2. Configure environment:
+```bash
+cp .env.example .env
+# Edit .env with your configuration:
+# - API URL
+# - Groq API Key
+# - Other required keys
+```
+
+3. Build the application:
 ```bash
 # For iOS
 npm run build:ios
@@ -142,6 +157,29 @@ npm run build:android
 - Library access control
 - Cross-platform compatibility
 
+## Cross-Platform Synchronization
+
+### Mobile to Desktop Sync
+- Automatic data synchronization
+- Offline support
+- Background sync
+- Conflict resolution
+- Local file cleanup
+
+### Sync Features
+- Voice recording sync
+- Library management sync
+- Profile data sync
+- Metadata preservation
+- Secure transfer
+
+### Offline Capabilities
+- Local storage
+- Queue management
+- Automatic retry
+- Network status monitoring
+- Data consistency
+
 ## API Integration
 
 ### Authentication
@@ -172,6 +210,32 @@ npm run build:android
 - Biometric support
 - Session management
 - Role-based access
+
+## Dependencies
+
+### Server
+- Node.js 16+
+- PostgreSQL 12+
+- Redis 6+
+- Express.js
+- Socket.IO
+- JWT
+
+### Desktop Client
+- Electron
+- React
+- TypeScript
+- WebRTC
+- Material-UI
+
+### Mobile Client
+- React Native
+- Expo
+- TypeScript
+- AsyncStorage
+- NetInfo
+- Expo AV
+- Expo FileSystem
 
 ## Contributing
 

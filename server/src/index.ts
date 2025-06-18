@@ -14,6 +14,9 @@ import userRoutes from './routes/user';
 import { emotionRoutes } from './routes/emotion';
 import { audioRoutes } from './routes/audio';
 import { initializeDatabase, testConnection } from './db';
+import fileUpload from 'express-fileupload';
+import voiceRoutes from './routes/voice';
+import assistantRoutes from './routes/assistant';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -40,3 +43,31 @@ async function startServer() {
 
 // Call the startServer function to begin the server
 startServer(); 
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max file size
+  useTempFiles: true,
+  tempFileDir: '/tmp/',
+}));
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/voice', voiceRoutes);
+app.use('/api/assistant', assistantRoutes);
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+}); 

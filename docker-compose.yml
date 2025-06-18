@@ -10,10 +10,8 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/voicevault
-      - REDIS_URL=redis://redis:6379
     depends_on:
       - postgres
-      - redis
 
   postgres:
     image: postgres:14-alpine
@@ -26,13 +24,5 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  redis:
-    image: redis:6-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-
 volumes:
-  postgres_data:
-  redis_data: 
+  postgres_data: 

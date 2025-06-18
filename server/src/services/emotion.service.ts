@@ -3,7 +3,7 @@ import { processVoiceEmotion } from '../models/emotion/processor';
 import { generateQRCode } from '../utils/qrcode';
 import { getGPSLocation } from '../utils/gps';
 import { generateApiToken } from '../utils/token';
-import { User } from '../models/user';
+import { User } from '../models/User';
 import { CustomError } from '../middleware/errorHandler';
 import QRCode from 'qrcode';
 import path from 'path';

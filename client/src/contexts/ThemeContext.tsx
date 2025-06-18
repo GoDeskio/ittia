@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
+import { useAuth } from './AuthContext';
+import axios from 'axios';
 
 interface NeumorphicSettings {
   shadowDistance: number;
@@ -19,24 +21,45 @@ interface AnimationSettings {
   transitionEasing: string;
 }
 
-interface ThemeContextType {
-  colors: {
-    primary: string;
-    secondary: string;
-    background: string;
-    text: string;
-    [key: string]: string; // Add index signature for dynamic color access
+interface StylePreferences {
+  primaryColor: string;
+  secondaryColor: string;
+  buttonColor: string;
+  tableColor: string;
+  commentBoxColor: string;
+  background: string;
+  text: string;
+}
+
+interface BannerImage {
+  url: string;
+  width: number;
+  height: number;
+  position: {
+    x: number;
+    y: number;
+    scale: number;
   };
-  updateColors: (newColors: Partial<ThemeContextType['colors']>) => void;
+}
+
+interface ThemeContextType {
+  colors: StylePreferences;
+  updateColors: (newColors: Partial<StylePreferences>) => void;
   updateNeumorphicSettings: (settings: NeumorphicSettings) => void;
   updateAnimationSettings: (settings: AnimationSettings) => void;
   neumorphicSettings: NeumorphicSettings;
   animationSettings: AnimationSettings;
+  bannerImage?: BannerImage;
+  updateBanner: (banner: Partial<BannerImage> & { file?: File }) => Promise<void>;
+  isCurrentUser: (userId: string) => boolean;
 }
 
-const defaultColors = {
-  primary: '#64ffda',
-  secondary: '#0a192f',
+const defaultColors: StylePreferences = {
+  primaryColor: '#64ffda',
+  secondaryColor: '#0a192f',
+  buttonColor: '#64ffda',
+  tableColor: '#ffffff',
+  commentBoxColor: '#f5f5f5',
   background: '#e0e5ec',
   text: '#4a4a4a'
 };
@@ -66,6 +89,8 @@ const ThemeContext = createContext<ThemeContextType>({
   updateAnimationSettings: () => {},
   neumorphicSettings: defaultNeumorphicSettings,
   animationSettings: defaultAnimationSettings,
+  updateBanner: async () => {},
+  isCurrentUser: () => false,
 });
 
 export const useTheme = () => {
@@ -77,13 +102,37 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
   const [colors, setColors] = useState(defaultColors);
   const [neumorphicSettings, setNeumorphicSettings] = useState(defaultNeumorphicSettings);
   const [animationSettings, setAnimationSettings] = useState(defaultAnimationSettings);
+  const [bannerImage, setBannerImage] = useState<BannerImage>();
 
-  const updateColors = useCallback((newColors: Partial<ThemeContextType['colors']>) => {
-    setColors(prev => ({ ...prev, ...newColors }));
-  }, []);
+  useEffect(() => {
+    if (user) {
+      // Load user's style preferences
+      axios.get(`/api/users/${user.id}/style-preferences`)
+        .then(response => {
+          setColors(prev => ({ ...prev, ...response.data.stylePreferences }));
+          setBannerImage(response.data.bannerImage);
+        })
+        .catch(console.error);
+    }
+  }, [user]);
+
+  const updateColors = useCallback(async (newColors: Partial<StylePreferences>) => {
+    if (!user) {
+      throw new Error('You must be logged in to update style preferences');
+    }
+
+    try {
+      await axios.put(`/api/users/${user.id}/style-preferences`, { stylePreferences: newColors });
+      setColors(prev => ({ ...prev, ...newColors }));
+    } catch (error) {
+      console.error('Failed to update style preferences:', error);
+      throw error;
+    }
+  }, [user]);
 
   const updateNeumorphicSettings = useCallback((newSettings: NeumorphicSettings) => {
     setNeumorphicSettings(prev => ({ ...prev, ...newSettings }));
@@ -93,13 +142,41 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setAnimationSettings(prev => ({ ...prev, ...newSettings }));
   }, []);
 
+  const updateBanner = async (newBanner: Partial<BannerImage> & { file?: File }) => {
+    if (!user) {
+      throw new Error('You must be logged in to update banner image');
+    }
+
+    try {
+      let bannerData = { ...newBanner };
+      
+      // If the banner includes a File object, upload it first
+      if (newBanner.file) {
+        const formData = new FormData();
+        formData.append('banner', newBanner.file);
+        const response = await axios.post(`/api/users/${user.id}/upload-banner`, formData);
+        bannerData.url = response.data.url;
+      }
+
+      await axios.put(`/api/users/${user.id}/banner`, { bannerImage: bannerData });
+      setBannerImage(prev => ({ ...prev, ...bannerData } as BannerImage));
+    } catch (error) {
+      console.error('Failed to update banner:', error);
+      throw error;
+    }
+  };
+
+  const isCurrentUser = (userId: string): boolean => {
+    return user?.id === userId;
+  };
+
   const theme = createTheme({
     palette: {
       primary: {
-        main: colors.primary,
+        main: colors.primaryColor,
       },
       secondary: {
-        main: colors.secondary,
+        main: colors.secondaryColor,
       },
       background: {
         default: colors.background,
@@ -145,6 +222,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updateNeumorphicSettings,
         animationSettings,
         updateAnimationSettings,
+        bannerImage,
+        updateBanner,
+        isCurrentUser,
       }}
     >
       <MuiThemeProvider theme={theme}>

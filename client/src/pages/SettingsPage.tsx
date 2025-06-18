@@ -23,6 +23,7 @@ import {
   Notifications as NotificationsIcon,
 } from '@mui/icons-material';
 import NotificationSettings from '../components/NotificationSettings';
+import StoragePathSettings from '../components/StoragePathSettings';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -211,6 +212,10 @@ const SettingsPage: React.FC = () => {
         <TabPanel value={currentTab} index={1}>
           <NotificationSettings />
         </TabPanel>
+
+        <Box sx={{ mt: 4 }}>
+          <StoragePathSettings />
+        </Box>
 
         {showSaveSuccess && (
           <Alert

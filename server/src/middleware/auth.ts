@@ -1,31 +1,68 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { User, IUser } from '../models/user';
+import { User } from '../models/User';
 
-declare global {
-  namespace Express {
-    interface User extends IUser {}
-  }
+export interface AuthRequest extends Request {
+  user?: {
+    id: string;
+    email: string;
+    role: string;
+  };
 }
 
-export const authenticateUser = async (req: Request, res: Response, next: NextFunction) => {
+export interface AuthenticatedRequest extends Request {
+  user?: any;
+}
+
+export const authenticateToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
     if (!token) {
-      throw new Error();
+      return res.status(401).json({ message: 'No token provided' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { _id: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
     const user = await User.findById(decoded._id);
 
     if (!user) {
-      throw new Error();
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    req.user = {
+      id: user._id,
+      email: user.email,
+      role: user.role
+    };
+
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
+export const authenticateUser = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+    const user = await User.findById(decoded._id);
+
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
     }
 
     req.user = user;
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Please authenticate' });
+    return res.status(401).json({ message: 'Invalid token' });
   }
-}; 
+};
+
+export const auth = authenticateToken; 

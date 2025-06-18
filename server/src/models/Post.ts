@@ -1,20 +1,18 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IPost extends Document {
-  author: Schema.Types.ObjectId;
+  author: mongoose.Types.ObjectId;
   content: string;
-  media?: {
-    url: string;
-    type: 'image' | 'gif' | 'video';
-    thumbnailUrl?: string;
-  };
-  likes: Schema.Types.ObjectId[];
+  mediaUrls: string[];
+  mediaTypes: ('image' | 'video' | 'audio' | 'file')[];
+  likes: mongoose.Types.ObjectId[];
+  shares: number;
   comments: {
-    author: Schema.Types.ObjectId;
+    author: mongoose.Types.ObjectId;
     content: string;
     createdAt: Date;
   }[];
-  visibility: 'public' | 'private' | 'followers';
+  visibility: 'public' | 'private' | 'friends';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,8 +21,7 @@ const PostSchema = new Schema<IPost>({
   author: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    index: true
+    required: true
   },
   content: {
     type: String,
@@ -32,18 +29,21 @@ const PostSchema = new Schema<IPost>({
     trim: true,
     maxlength: 2000
   },
-  media: {
-    url: String,
-    type: {
-      type: String,
-      enum: ['image', 'gif', 'video']
-    },
-    thumbnailUrl: String
-  },
+  mediaUrls: [{
+    type: String
+  }],
+  mediaTypes: [{
+    type: String,
+    enum: ['image', 'video', 'audio', 'file']
+  }],
   likes: [{
     type: Schema.Types.ObjectId,
     ref: 'User'
   }],
+  shares: {
+    type: Number,
+    default: 0
+  },
   comments: [{
     author: {
       type: Schema.Types.ObjectId,
@@ -63,7 +63,7 @@ const PostSchema = new Schema<IPost>({
   }],
   visibility: {
     type: String,
-    enum: ['public', 'private', 'followers'],
+    enum: ['public', 'private', 'friends'],
     default: 'public'
   }
 }, {

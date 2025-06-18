@@ -1,136 +1,159 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import bcrypt from 'bcryptjs';
-
-export type MessageRetentionPeriod = '1h' | '6h' | '24h' | '7d' | '30d';
-
-export interface IUserStyle {
-  primaryColor: string;
-  secondaryColor: string;
-  buttonColor: string;
-  tableColor: string;
-  commentBoxColor: string;
-}
-
-export interface IBannerImage {
-  url: string;
-  width: number;
-  height: number;
-  position: {
-    x: number;
-    y: number;
-    scale: number;
-  };
-}
+import { pool } from '../db';
+import bcrypt from 'bcrypt';
+import { Document } from 'mongoose';
 
 export interface IUser extends Document {
+  _id: string;
   name: string;
   email: string;
   password: string;
-  role: 'user' | 'admin' | 'god';
   profilePicture?: string;
-  bannerImage?: IBannerImage;
-  title?: string;
-  bio?: string;
-  publicKey: string;
-  privateKey: string;
-  messageRetentionPeriod: MessageRetentionPeriod;
-  stylePreferences: IUserStyle;
+  role: string;
+  settings: {
+    libraryPath?: string;
+  };
+  storageQuota: {
+    library: number;
+    cache: number;
+  };
+  storageUsed: {
+    library: number;
+    cache: number;
+  };
+  authMethods: {
+    password: boolean;
+    pinCode: boolean;
+    fingerprint: boolean;
+    google: boolean;
+    facebook: boolean;
+    linkedin: boolean;
+    instagram: boolean;
+  };
+  preferredAuthMethod: string;
+  pinCode?: string;
+  fingerPrintHash?: string;
+  apiToken?: string;
+  privateKey?: string;
+  publicKey?: string;
+  messageRetentionPeriod: number;
+  socialIntegrations: {
+    [key: string]: {
+      accessToken: string;
+      refreshToken?: string;
+      expiresAt?: Date;
+    };
+  };
+  devicePermissions: {
+    microphone: boolean;
+    camera: boolean;
+    location: boolean;
+    notifications: boolean;
+  };
+  stylePreferences?: {
+    theme: string;
+    fontSize: number;
+    colorScheme: string;
+  };
+  bannerImage?: string;
+  created_at: Date;
+  updated_at: Date;
+
   comparePassword(candidatePassword: string): Promise<boolean>;
+  save(): Promise<IUser>;
 }
 
-const BannerImageSchema = new Schema<IBannerImage>({
-  url: { type: String, required: true },
-  width: { type: Number, required: true },
-  height: { type: Number, required: true },
-  position: {
-    x: { type: Number, default: 50 }, // center position percentage
-    y: { type: Number, default: 50 }, // center position percentage
-    scale: { type: Number, default: 1 },
-  },
-});
-
-const UserStyleSchema = new Schema<IUserStyle>({
-  primaryColor: { type: String, default: '#1976d2' },
-  secondaryColor: { type: String, default: '#dc004e' },
-  buttonColor: { type: String, default: '#1976d2' },
-  tableColor: { type: String, default: '#ffffff' },
-  commentBoxColor: { type: String, default: '#f5f5f5' },
-});
-
-const UserSchema = new Schema<IUser>({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin', 'god'],
-    default: 'user'
-  },
-  profilePicture: {
-    type: String
-  },
-  bannerImage: {
-    type: BannerImageSchema
-  },
-  title: {
-    type: String,
-    trim: true
-  },
-  bio: {
-    type: String,
-    trim: true,
-    maxlength: 500
-  },
-  publicKey: {
-    type: String,
-    required: true
-  },
-  privateKey: {
-    type: String,
-    required: true
-  },
-  messageRetentionPeriod: {
-    type: String,
-    enum: ['1h', '6h', '24h', '7d', '30d'],
-    default: '7d'
-  },
-  stylePreferences: {
-    type: UserStyleSchema,
-    default: () => ({})
+export class User {
+  static async findById(id: string): Promise<IUser | null> {
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    return result.rows[0] || null;
   }
-}, {
-  timestamps: true
-});
 
-// Hash password before saving
-UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error as Error);
+  static async findByEmail(email: string): Promise<IUser | null> {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    return result.rows[0] || null;
   }
-});
 
-// Compare password method
-UserSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
-};
+  static async findOne(query: any): Promise<IUser | null> {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [query.email]);
+    return result.rows[0] || null;
+  }
 
-export const User = mongoose.model<IUser>('User', UserSchema); 
+  static async create(userData: { name: string; email: string; password: string; role?: string }): Promise<IUser> {
+    const password_hash = await bcrypt.hash(userData.password, 10);
+    const result = await pool.query(
+      'INSERT INTO users (name, email, password_hash, role, settings, storage_quota, storage_used, auth_methods, device_permissions, social_integrations) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+      [
+        userData.name,
+        userData.email,
+        password_hash,
+        userData.role || 'user',
+        { libraryPath: null },
+        { library: 1073741824, cache: 1073741824 }, // 1GB default quota
+        { library: 0, cache: 0 },
+        {
+          password: true,
+          pinCode: false,
+          fingerprint: false,
+          google: false,
+          facebook: false,
+          linkedin: false,
+          instagram: false
+        },
+        {
+          microphone: false,
+          camera: false,
+          location: false,
+          notifications: false
+        },
+        {}
+      ]
+    );
+    return result.rows[0];
+  }
+
+  static async update(id: string, updates: Partial<IUser>): Promise<IUser | null> {
+    const setClause = Object.keys(updates)
+      .map((key, index) => `${key} = $${index + 2}`)
+      .join(', ');
+    const values = Object.values(updates);
+    const result = await pool.query(
+      `UPDATE users SET ${setClause}, updated_at = NOW() WHERE id = $1 RETURNING *`,
+      [id, ...values]
+    );
+    return result.rows[0] || null;
+  }
+
+  static async updateStorageUsage(id: string, storageType: 'cache' | 'library', size: number): Promise<void> {
+    const column = `storage_used.${storageType}`;
+    await pool.query(
+      `UPDATE users SET storage_used = jsonb_set(storage_used, '{${storageType}}', to_jsonb(COALESCE((storage_used->>'${storageType}')::int + $1, 0)), true), updated_at = NOW() WHERE id = $2`,
+      [size, id]
+    );
+  }
+
+  static async updateStorageQuota(id: string, storageType: 'cache' | 'library', quota: number): Promise<void> {
+    const column = `storage_quota.${storageType}`;
+    await pool.query(
+      `UPDATE users SET storage_quota = jsonb_set(storage_quota, '{${storageType}}', to_jsonb($1), true), updated_at = NOW() WHERE id = $2`,
+      [quota, id]
+    );
+  }
+
+  static async findAll(): Promise<IUser[]> {
+    const result = await pool.query('SELECT * FROM users');
+    return result.rows;
+  }
+
+  static async comparePassword(user: IUser, candidatePassword: string): Promise<boolean> {
+    return bcrypt.compare(candidatePassword, user.password);
+  }
+
+  static async findByIdAndUpdate(id: string, updates: Partial<IUser>, options?: any): Promise<IUser | null> {
+    return this.update(id, updates);
+  }
+
+  static async findByIdAndDelete(id: string): Promise<IUser | null> {
+    const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
+    return result.rows[0] || null;
+  }
+}

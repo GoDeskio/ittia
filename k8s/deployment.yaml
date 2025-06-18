@@ -29,11 +29,6 @@ spec:
             secretKeyRef:
               name: voicevault-secrets
               key: database-url
-        - name: REDIS_URL
-          valueFrom:
-            secretKeyRef:
-              name: voicevault-secrets
-              key: redis-url
         resources:
           requests:
             cpu: "100m"

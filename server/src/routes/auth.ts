@@ -3,7 +3,7 @@ import { AuthService } from '../services/authService';
 import { validateRequest } from '../middleware/validation';
 import { body } from 'express-validator';
 import passport from 'passport';
-import { User } from '../models/user';
+import { User } from '../models/User';
 import { authConfig } from '../config/auth.config';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';

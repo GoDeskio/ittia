@@ -1,21 +1,30 @@
 import { Request, Response, NextFunction } from 'express';
 
-export interface CustomError extends Error {
-  statusCode?: number;
+export class CustomError extends Error {
+  statusCode: number;
+
+  constructor(message: string, statusCode: number) {
+    super(message);
+    this.statusCode = statusCode;
+    this.name = 'CustomError';
+  }
 }
 
 export const errorHandler = (
-  err: CustomError,
+  err: Error,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  console.error(err.stack);
 
-  res.status(statusCode).json({
-    success: false,
-    error: message,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  if (err instanceof CustomError) {
+    return res.status(err.statusCode).json({
+      error: err.message
+    });
+  }
+
+  return res.status(500).json({
+    error: 'Internal server error'
   });
 }; 

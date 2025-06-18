@@ -1,94 +1,108 @@
-import { CachedAudio } from '../models/cachedAudio';
-import { AudioFile } from '../models/audioFile';
-import { User } from '../models/user';
+import { AudioFile } from '../models/AudioFile';
+import { CachedAudio } from '../models/CachedAudio';
+import { User } from '../models/User';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs/promises';
 import path from 'path';
 
 export interface WordFile {
-  userId: string;
   filename: string;
   path: string;
   size: number;
   duration: number;
-  metadata: {
-    deviceId?: string;
-    recordingQuality?: string;
-    [key: string]: any;
-  };
+  word: string;
+  startTime: number;
+  endTime: number;
 }
 
-export async function processAudioToWords(
-  userId: string,
-  cachedAudioId: string
-): Promise<WordFile> {
+export const processAudioToWords = async (audioPath: string): Promise<WordFile[]> => {
   try {
-    // Get the cached audio file
-    const cachedAudio = await CachedAudio.findOne({
-      _id: cachedAudioId,
-      userId,
-    });
+    // Get audio duration using ffprobe
+    const duration = await getAudioDuration(audioPath);
 
-    if (!cachedAudio) {
-      throw new Error('Cached audio not found');
+    // Split audio into words (this is a placeholder - you'll need to implement actual word detection)
+    const words = await detectWords(audioPath);
+
+    // Create word files
+    const wordFiles: WordFile[] = [];
+    for (const word of words) {
+      const wordPath = path.join(path.dirname(audioPath), `${word.word}-${Date.now()}.wav`);
+      await extractWord(audioPath, wordPath, word.startTime, word.endTime);
+
+      const stats = await fs.stat(wordPath);
+      wordFiles.push({
+        filename: path.basename(wordPath),
+        path: wordPath,
+        size: stats.size,
+        duration: word.endTime - word.startTime,
+        word: word.word,
+        startTime: word.startTime,
+        endTime: word.endTime
+      });
     }
 
-    // Create the library directory if it doesn't exist
-    const libraryDir = path.join(__dirname, '..', '..', 'uploads', userId, 'library');
-    await fs.mkdir(libraryDir, { recursive: true });
-
-    // Generate output filename
-    const outputFilename = `${path.parse(cachedAudio.filename).name}_processed.wav`;
-    const outputPath = path.join(libraryDir, outputFilename);
-
-    // Process the audio file (example: convert to wav format)
-    await new Promise<void>((resolve, reject) => {
-      ffmpeg(cachedAudio.path)
-        .toFormat('wav')
-        .on('end', () => resolve())
-        .on('error', (error: Error) => reject(error))
-        .save(outputPath);
-    });
-
-    // Get the processed file stats
-    const stats = await fs.stat(outputPath);
-
-    // Create the processed file record
-    const wordFile: WordFile = {
-      userId,
-      filename: outputFilename,
-      path: outputPath,
-      size: stats.size,
-      duration: cachedAudio.duration,
-      metadata: cachedAudio.metadata,
-    };
-
-    // Create AudioFile record in database
-    const audioFile = new AudioFile({
-      userId,
-      filename: outputFilename,
-      path: outputPath,
-      size: stats.size,
-      duration: cachedAudio.duration,
-      metadata: cachedAudio.metadata,
-    });
-
-    await audioFile.save();
-
-    // Update user's storage usage
-    const user = await User.findById(userId);
-    if (user) {
-      user.storageUsed.library += stats.size;
-      await user.save();
-    }
-
-    // Mark the cached audio as processed
-    cachedAudio.processed = true;
-    await cachedAudio.save();
-
-    return wordFile;
+    return wordFiles;
   } catch (error) {
     console.error('Error processing audio to words:', error);
     throw error;
   }
-} 
+};
+
+const getAudioDuration = (audioPath: string): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(audioPath, (err, metadata) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(metadata.format.duration || 0);
+    });
+  });
+};
+
+const detectWords = async (audioPath: string): Promise<Array<{ word: string; startTime: number; endTime: number }>> => {
+  // This is a placeholder - you'll need to implement actual word detection
+  // For now, we'll just return some dummy data
+  return [
+    { word: 'hello', startTime: 0, endTime: 1 },
+    { word: 'world', startTime: 1.5, endTime: 2.5 }
+  ];
+};
+
+const extractWord = (audioPath: string, outputPath: string, startTime: number, endTime: number): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    ffmpeg(audioPath)
+      .setStartTime(startTime)
+      .setDuration(endTime - startTime)
+      .output(outputPath)
+      .on('end', () => resolve())
+      .on('error', (err) => reject(err))
+      .run();
+  });
+};
+
+export const processAudio = async (audioId: string, userId: string) => {
+  try {
+    const audioFile = await AudioFile.findById(audioId);
+    if (!audioFile || audioFile.user_id !== userId) {
+      throw new Error('Audio file not found');
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Process the audio file into words
+    const wordFiles = await processAudioToWords(audioFile.path);
+
+    // Update user's storage usage
+    const totalSize = wordFiles.reduce((total, wordFile) => total + wordFile.size, 0);
+    await User.updateStorageUsage(userId, 'library', totalSize);
+
+    return wordFiles;
+  } catch (error) {
+    console.error('Error processing audio:', error);
+    throw error;
+  }
+}; 

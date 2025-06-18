@@ -1,314 +1,247 @@
 # VoiceVault
 
-A modern voice-based authentication and management system with AI-powered features.
+VoiceVault is a comprehensive voice recording and management system with desktop and mobile applications. It provides secure storage, real-time transcription, and advanced audio processing capabilities.
 
-## Table of Contents
-- [Prerequisites](#prerequisites)
-- [Local Development Setup](#local-development-setup)
-- [Docker Setup](#docker-setup)
-- [GitLab Setup](#gitlab-setup)
-- [Kubernetes Deployment](#kubernetes-deployment)
-- [CI/CD Pipeline](#cicd-pipeline)
-- [Monitoring and Maintenance](#monitoring-and-maintenance)
-- [Critical Security Changes for Production](#critical-security-changes-for-production)
+## Features
 
-## Prerequisites
+- **Secure Voice Recording**
+  - End-to-end encryption
+  - Biometric authentication
+  - Secure cloud storage
+  - Automatic backup
 
-### Development Tools
-- Node.js (v18 or later)
-- npm (v8 or later)
-- Git
-- Docker Desktop
-- kubectl CLI
-- GitLab account
+- **Advanced Audio Processing**
+  - Real-time transcription
+  - Noise reduction
+  - Voice enhancement
+  - Multiple format support
 
-### Cloud Infrastructure
-- Kubernetes cluster (v1.19+)
-- Container Registry access
-- Domain name (for production)
+- **Cross-Platform Support**
+  - Desktop application (Windows, macOS, Linux)
+  - Mobile application (iOS, Android)
+  - Web interface
 
-### Access and Credentials
-- GitLab account with repository access
-- Kubernetes cluster access credentials
-- Container registry credentials
+- **Smart Organization**
+  - Automatic categorization
+  - Searchable transcripts
+  - Tags and folders
+  - Cloud sync
 
-## Local Development Setup
+## System Requirements
 
-1. Clone the repository:
+### Desktop Application
+- Node.js >= 18.0.0
+- Windows 10/11, macOS 10.15+, or Linux
+- 4GB RAM minimum
+- 1GB free disk space
+
+### Mobile Application
+- iOS 13.0+ or Android 8.0+
+- 2GB RAM minimum
+- 500MB free storage
+
+### Server
+- Node.js >= 18.0.0
+- PostgreSQL 14+
+- Redis 6+
+- 4GB RAM minimum
+- 10GB free disk space
+
+## Installation
+
+### Server Setup
+
+1. Install dependencies:
 ```bash
-git clone https://gitlab.com/your-username/voicevault.git
-cd voicevault
-```
-
-2. Install dependencies:
-```bash
-# Install root dependencies
+cd server
 npm install
-
-# Install client dependencies
-cd client && npm install
-cd ..
-
-# Install server dependencies
-cd server && npm install
-cd ..
-
-# Install shared dependencies
-cd shared && npm install
-cd ..
 ```
 
-3. Set up environment variables:
+2. Set up environment variables:
 ```bash
-# Copy example env files
 cp .env.example .env
-cp client/.env.example client/.env
-cp server/.env.example server/.env
+# Edit .env with your configuration
 ```
 
-4. Start development servers:
+3. Initialize the database:
 ```bash
-# Start all services
+npm run db:init
+```
+
+4. Start the server:
+```bash
 npm run dev
 ```
 
-## Docker Setup
+### Desktop Application
 
-1. Build and run with Docker Compose (development):
+1. Install dependencies:
 ```bash
-# Build and start services
-docker-compose up --build
-
-# Run in detached mode
-docker-compose up -d
-
-# Stop services
-docker-compose down
+cd desktop-client
+npm run install-deps
 ```
 
-2. Build production image:
+2. Start the application:
 ```bash
-docker build -t voicevault:latest .
+# Development
+npm run electron-dev
+
+# Production build
+npm run electron-pack
 ```
 
-## GitLab Setup
+### Mobile Application
 
-1. Create a new GitLab repository:
-   - Go to GitLab.com
-   - Click "New Project"
-   - Choose "Create blank project"
-   - Name it "voicevault"
-   - Set visibility level (recommended: Private)
-
-2. Push existing repository:
+1. Install dependencies:
 ```bash
-git remote add gitlab https://gitlab.com/your-username/voicevault.git
-git push -u gitlab main
+cd mobile-client
+npm run install-deps
 ```
 
-3. Set up GitLab Container Registry:
-   - Navigate to your project's "Packages & Registries" > "Container Registry"
-   - Note down the registry path
+2. Start the application:
+```bash
+# iOS
+npm run ios
 
-4. Configure GitLab CI/CD Variables:
-   - Go to Settings > CI/CD > Variables
+# Android
+npm run android
+```
+
+### GitLab Setup
+
+1. Run the GitLab setup script:
+```bash
+cd mobile-client/android
+./setup-gitlab.ps1
+```
+
+2. Configure GitLab CI/CD variables:
+   - Go to your GitLab project settings
+   - Navigate to Settings > CI/CD > Variables
    - Add the following variables:
-     - `KUBE_CONFIG` (Base64 encoded kubeconfig file)
-     - `DOCKER_REGISTRY_USER`
-     - `DOCKER_REGISTRY_PASSWORD`
-     - `DOCKER_REGISTRY_URL`
-     - `DATABASE_URL`
-     - `REDIS_URL`
+     - `ANDROID_SIGNING_KEY`: Your base64 encoded keystore
+     - `ANDROID_SIGNING_PASSWORD`: Your keystore password
 
-## Kubernetes Deployment
-
-1. Create Kubernetes namespace:
+3. Push your code to GitLab:
 ```bash
-kubectl apply -f k8s/namespace.yaml
+cd mobile-client/android
+./push-to-gitlab.ps1
 ```
 
-2. Create secrets:
+## Dependency Management
+
+The project includes a robust dependency management system:
+
+### Desktop and Mobile Applications
+
+Both applications support the following dependency management commands:
+
 ```bash
-# Create base64 encoded secrets
-echo -n 'your-database-url' | base64
-echo -n 'your-redis-url' | base64
+# Install dependencies
+npm run install-deps
 
-# Update k8s/secrets.yaml with encoded values
-kubectl apply -f k8s/secrets.yaml
+# Validate dependency versions
+npm run validate-deps
+
+# Update dependencies
+npm run update-deps
+
+# Check for security vulnerabilities
+npm run check-security
 ```
 
-3. Deploy application:
+The dependency manager ensures:
+- Node.js version compatibility
+- Clean dependency installation
+- Proper lock file generation
+- Security vulnerability checks
+- Platform-specific requirements
+
+## Development
+
+### Project Structure
+
+```
+voicevault/
+├── server/                 # Backend server
+│   ├── src/
+│   │   ├── config/        # Configuration files
+│   │   ├── controllers/   # Route controllers
+│   │   ├── middleware/    # Custom middleware
+│   │   ├── models/        # Database models
+│   │   ├── routes/        # API routes
+│   │   ├── services/      # Business logic
+│   │   └── utils/         # Utility functions
+│   └── tests/             # Server tests
+├── desktop-client/        # Desktop application
+│   ├── src/
+│   │   ├── components/    # React components
+│   │   ├── hooks/         # Custom hooks
+│   │   ├── services/      # API services
+│   │   └── utils/         # Utility functions
+│   └── tests/             # Desktop tests
+├── mobile-client/         # Mobile application
+│   ├── src/
+│   │   ├── components/    # React Native components
+│   │   ├── hooks/         # Custom hooks
+│   │   ├── services/      # API services
+│   │   └── utils/         # Utility functions
+│   └── tests/             # Mobile tests
+└── scripts/               # Shared scripts
+    └── dependency-manager.js  # Dependency management
+```
+
+### Testing
+
 ```bash
-# Apply Kubernetes configurations
-kubectl apply -f k8s/deployment.yaml
-kubectl apply -f k8s/service.yaml
+# Server tests
+cd server
+npm test
 
-# Verify deployment
-kubectl get pods -n voicevault
-kubectl get services -n voicevault
+# Desktop tests
+cd desktop-client
+npm test
+
+# Mobile tests
+cd mobile-client
+npm test
 ```
 
-## CI/CD Pipeline
+### Building
 
-Create `.gitlab-ci.yml` in your repository:
-
-```yaml
-stages:
-  - build
-  - test
-  - deploy
-
-variables:
-  DOCKER_REGISTRY: $DOCKER_REGISTRY_URL
-  DOCKER_IMAGE: $DOCKER_REGISTRY_URL/$CI_PROJECT_PATH
-
-build:
-  stage: build
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY
-    - docker build -t $DOCKER_IMAGE:$CI_COMMIT_SHA .
-    - docker push $DOCKER_IMAGE:$CI_COMMIT_SHA
-    - docker tag $DOCKER_IMAGE:$CI_COMMIT_SHA $DOCKER_IMAGE:latest
-    - docker push $DOCKER_IMAGE:latest
-
-test:
-  stage: test
-  image: node:18-alpine
-  script:
-    - npm install
-    - npm run test
-
-deploy:
-  stage: deploy
-  image: 
-    name: bitnami/kubectl:latest
-    entrypoint: ['']
-  script:
-    - echo "$KUBE_CONFIG" | base64 -d > kubeconfig.yaml
-    - export KUBECONFIG=kubeconfig.yaml
-    - kubectl apply -f k8s/namespace.yaml
-    - kubectl apply -f k8s/secrets.yaml
-    - |
-      cat <<EOF > k8s/deployment.yaml
-      $(cat k8s/deployment.yaml | sed "s|voicevault:latest|$DOCKER_IMAGE:$CI_COMMIT_SHA|g")
-      EOF
-    - kubectl apply -f k8s/deployment.yaml
-    - kubectl apply -f k8s/service.yaml
-  only:
-    - main
-```
-
-## Monitoring and Maintenance
-
-### Health Checks
-Monitor application health:
 ```bash
-# Check pod status
-kubectl get pods -n voicevault
+# Desktop application
+cd desktop-client
+npm run electron-pack
 
-# View pod logs
-kubectl logs -f <pod-name> -n voicevault
-
-# Check service status
-kubectl get services -n voicevault
+# Mobile application
+cd mobile-client
+# iOS
+npm run ios
+# Android
+npm run android
 ```
 
-### Scaling
-Scale the application:
-```bash
-# Scale replicas
-kubectl scale deployment voicevault -n voicevault --replicas=5
+## Security
 
-# Auto-scaling (if configured)
-kubectl get hpa -n voicevault
-```
+- End-to-end encryption for all voice recordings
+- Secure authentication with biometric support
+- Regular security audits
+- Automatic vulnerability checks
+- Secure cloud storage with encryption at rest
 
-### Updates and Rollbacks
-```bash
-# Update deployment
-kubectl set image deployment/voicevault voicevault=$DOCKER_IMAGE:new-tag -n voicevault
+## Contributing
 
-# Rollback deployment
-kubectl rollout undo deployment/voicevault -n voicevault
-```
-
-## Architecture
-
-The application consists of several components:
-- Frontend (React.js)
-- Backend API (Node.js/Express)
-- PostgreSQL database
-- Redis cache
-- Voice processing services
-- AI conversation services
-
-### System Requirements
-- CPU: Minimum 2 cores recommended
-- Memory: Minimum 4GB RAM
-- Storage: 20GB+ for application and databases
-- Network: Stable internet connection with minimum 10Mbps
-
-## Support and Documentation
-
-For additional support:
-- Check the [GitLab repository issues](https://gitlab.com/your-username/voicevault/issues)
-- Review the [API Documentation](./docs/api.md)
-- Contact the development team
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-[Your License Type] - See LICENSE file for details
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Critical Security Changes for Production
+## Support
 
-Before deploying to production, the following security issues must be addressed:
-
-### Client-Side Security Issues
-
-1. High Severity:
-   - Package: `svgo` (SVG optimization tool)
-   - Issue: Inefficient Regular Expression Complexity in `nth-check`
-   - Impact: Potential ReDoS (Regular Expression Denial of Service) attacks
-   - Fix: Update `svgo` and its dependencies when a patched version is available
-
-2. Moderate Severity:
-   - Package: `postcss` (< 8.4.31)
-   - Issue: Line return parsing vulnerability
-   - Fix: Update to latest version when compatible with other dependencies
-
-3. Moderate Severity:
-   - Package: `webpack-dev-server`
-   - Issue: Potential source code exposure in non-Chromium browsers
-   - Fix: Update to latest version when compatible
-
-### Server-Side Security Issues
-
-1. Low Severity:
-   - Packages: `brace-expansion`, `minimatch`, and TypeScript/ESLint related tools
-   - Issue: Regular Expression Denial of Service vulnerabilities
-   - Impact: Development tools only, no production impact
-   - Fix: Update development dependencies when compatible versions are available
-
-### Security Recommendations
-
-1. Production Deployment:
-   - Use `npm ci` instead of `npm install` to ensure exact dependency versions
-   - This prevents automatic updates to potentially vulnerable packages
-
-2. Dependency Management:
-   - Create a separate task to test dependency updates
-   - Test thoroughly in staging environment before production updates
-   - Keep track of security advisories for critical dependencies
-
-3. Regular Audits:
-   - Run `npm audit` regularly to check for new vulnerabilities
-   - Document all known issues and their mitigation strategies
-   - Prioritize fixing high and moderate severity issues
-
-4. Build Process:
-   - Ensure production builds exclude development dependencies
-   - Use proper environment variables for production configuration
-   - Implement Content Security Policy (CSP) headers
+For support, please open an issue in the GitHub repository or contact the development team.

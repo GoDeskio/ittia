@@ -1,93 +1,105 @@
 # VoiceVault
 
-VoiceVault is a comprehensive voice recording and management system with desktop and mobile applications. It provides secure storage, real-time transcription, and advanced audio processing capabilities.
+A secure voice recording and management application with advanced AI-powered features.
 
 ## Features
 
-- **Secure Voice Recording**
-  - End-to-end encryption
-  - Biometric authentication
-  - Secure cloud storage
-  - Automatic backup
+### Secure Voice Recording
+- End-to-end encryption
+- Secure storage
+- Access control
+- Voice library management
+- API token authentication
 
-- **Advanced Audio Processing**
-  - Real-time transcription
-  - Noise reduction
-  - Voice enhancement
-  - Multiple format support
+### Advanced Audio Processing
+- Real-time voice analysis
+- Emotion detection
+- Tone analysis
+- Clarity assessment
+- Confidence scoring
+- Groq AI integration for improved inference
+- Voice library integration
 
-- **Cross-Platform Support**
-  - Desktop application (Windows, macOS, Linux)
-  - Mobile application (iOS, Android)
-  - Web interface
+### Cross-Platform Support
+- Web application
+- Desktop client
+- Mobile app
+- Responsive design
 
-- **Smart Organization**
-  - Automatic categorization
-  - Searchable transcripts
-  - Tags and folders
-  - Cloud sync
+### Smart Organization
+- Voice library management
+- QR code sharing
+- API token management
+- Voice library connections
+- Share functionality
 
 ## System Requirements
 
-### Desktop Application
-- Node.js >= 18.0.0
-- Windows 10/11, macOS 10.15+, or Linux
-- 4GB RAM minimum
-- 1GB free disk space
-
-### Mobile Application
-- iOS 13.0+ or Android 8.0+
-- 2GB RAM minimum
-- 500MB free storage
-
 ### Server
-- Node.js >= 18.0.0
-- PostgreSQL 14+
+- Node.js 16+
+- PostgreSQL 12+
 - Redis 6+
 - 4GB RAM minimum
-- 10GB free disk space
+- 20GB storage minimum
+
+### Desktop Application
+- Windows 10/11, macOS 10.15+, or Linux
+- 4GB RAM minimum
+- WebRTC support
+- Audio input device
+
+### Mobile Application
+- iOS 13+ or Android 8+
+- Camera and microphone permissions
+- Biometric authentication support
 
 ## Installation
 
 ### Server Setup
 
-1. Install dependencies:
+1. Clone the repository:
 ```bash
-cd server
+git clone https://github.com/GoDeskio/ittia.git
+cd VoiceVault
+```
+
+2. Install dependencies:
+```bash
 npm install
 ```
 
-2. Set up environment variables:
+3. Configure environment variables:
 ```bash
 cp .env.example .env
 # Edit .env with your configuration
 ```
 
-3. Initialize the database:
+4. Set up the database:
 ```bash
-npm run db:init
+npm run db:migrate
 ```
 
-4. Start the server:
+5. Start the server:
 ```bash
-npm run dev
+npm start
 ```
 
 ### Desktop Application
 
 1. Install dependencies:
 ```bash
-cd desktop-client
-npm run install-deps
+cd client
+npm install
 ```
 
-2. Start the application:
+2. Build the application:
 ```bash
-# Development
-npm run electron-dev
+npm run build
+```
 
-# Production build
-npm run electron-pack
+3. Start the application:
+```bash
+npm start
 ```
 
 ### Mobile Application
@@ -95,140 +107,71 @@ npm run electron-pack
 1. Install dependencies:
 ```bash
 cd mobile-client
-npm run install-deps
+npm install
 ```
 
-2. Start the application:
+2. Build the application:
 ```bash
-# iOS
-npm run ios
+# For iOS
+npm run build:ios
 
-# Android
-npm run android
+# For Android
+npm run build:android
 ```
 
-### GitLab Setup
+## Voice Analysis Features
 
-1. Run the GitLab setup script:
-```bash
-cd mobile-client/android
-./setup-gitlab.ps1
-```
+### Groq AI Integration
+- Powered by Mixtral-8x7b-32768 model
+- Real-time voice processing
+- Context-aware responses
+- Voice library integration
+- Emotion and tone analysis
 
-2. Configure GitLab CI/CD variables:
-   - Go to your GitLab project settings
-   - Navigate to Settings > CI/CD > Variables
-   - Add the following variables:
-     - `ANDROID_SIGNING_KEY`: Your base64 encoded keystore
-     - `ANDROID_SIGNING_PASSWORD`: Your keystore password
+### Voice Characteristics Analysis
+- Emotion detection
+- Tone analysis
+- Clarity assessment
+- Confidence scoring
+- Volume level monitoring
 
-3. Push your code to GitLab:
-```bash
-cd mobile-client/android
-./push-to-gitlab.ps1
-```
+### Voice Library Integration
+- QR code sharing
+- API token management
+- Secure connections
+- Library access control
+- Cross-platform compatibility
 
-## Dependency Management
+## API Integration
 
-The project includes a robust dependency management system:
+### Authentication
+- API token generation
+- Secure token storage
+- Token visibility control
+- Token refresh mechanism
 
-### Desktop and Mobile Applications
-
-Both applications support the following dependency management commands:
-
-```bash
-# Install dependencies
-npm run install-deps
-
-# Validate dependency versions
-npm run validate-deps
-
-# Update dependencies
-npm run update-deps
-
-# Check for security vulnerabilities
-npm run check-security
-```
-
-The dependency manager ensures:
-- Node.js version compatibility
-- Clean dependency installation
-- Proper lock file generation
-- Security vulnerability checks
-- Platform-specific requirements
-
-## Development
-
-### Project Structure
-
-```
-voicevault/
-├── server/                 # Backend server
-│   ├── src/
-│   │   ├── config/        # Configuration files
-│   │   ├── controllers/   # Route controllers
-│   │   ├── middleware/    # Custom middleware
-│   │   ├── models/        # Database models
-│   │   ├── routes/        # API routes
-│   │   ├── services/      # Business logic
-│   │   └── utils/         # Utility functions
-│   └── tests/             # Server tests
-├── desktop-client/        # Desktop application
-│   ├── src/
-│   │   ├── components/    # React components
-│   │   ├── hooks/         # Custom hooks
-│   │   ├── services/      # API services
-│   │   └── utils/         # Utility functions
-│   └── tests/             # Desktop tests
-├── mobile-client/         # Mobile application
-│   ├── src/
-│   │   ├── components/    # React Native components
-│   │   ├── hooks/         # Custom hooks
-│   │   ├── services/      # API services
-│   │   └── utils/         # Utility functions
-│   └── tests/             # Mobile tests
-└── scripts/               # Shared scripts
-    └── dependency-manager.js  # Dependency management
-```
-
-### Testing
-
-```bash
-# Server tests
-cd server
-npm test
-
-# Desktop tests
-cd desktop-client
-npm test
-
-# Mobile tests
-cd mobile-client
-npm test
-```
-
-### Building
-
-```bash
-# Desktop application
-cd desktop-client
-npm run electron-pack
-
-# Mobile application
-cd mobile-client
-# iOS
-npm run ios
-# Android
-npm run android
-```
+### Voice Library API
+- Library creation
+- Access management
+- Voice data storage
+- Analysis integration
+- Sharing capabilities
 
 ## Security
 
-- End-to-end encryption for all voice recordings
-- Secure authentication with biometric support
-- Regular security audits
-- Automatic vulnerability checks
-- Secure cloud storage with encryption at rest
+### Data Protection
+- End-to-end encryption
+- Secure storage
+- Access control
+- API token security
+- Voice data protection
+
+### Authentication
+- JWT tokens
+- API key management
+- Biometric support
+- Session management
+- Role-based access
 
 ## Contributing
 
@@ -238,10 +181,10 @@ npm run android
 4. Push to the branch
 5. Create a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## Support
 
 For support, please open an issue in the GitHub repository or contact the development team.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

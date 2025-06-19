@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const GROQ_API_KEY = process.env.REACT_APP_GROQ_API_KEY;
+const GROQ_API_KEY = process.env.REACT_APP_GROQ_API_KEY || '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';
 const GROQ_API_URL = 'https://api.groq.com/v1/chat/completions';
 
 interface GroqMessage {
@@ -36,9 +36,6 @@ export class GroqService {
   private apiKey: string;
 
   private constructor() {
-    if (!GROQ_API_KEY) {
-      throw new Error('GROQ_API_KEY is not defined');
-    }
     this.apiKey = GROQ_API_KEY;
   }
 

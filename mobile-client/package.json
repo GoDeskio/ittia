@@ -17,7 +17,10 @@
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
     "@react-native-async-storage/async-storage": "^1.21.0",
+<<<<<<< HEAD
     "@react-native-community/cli": "^18.0.0",
+=======
+>>>>>>> a1853dfd1097a4a53e26cd4724fea2fe5476425c
     "@react-native-community/netinfo": "^11.2.1",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",

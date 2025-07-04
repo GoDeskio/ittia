@@ -1,68 +1,50 @@
 import React from 'react';
-import { Box, BoxProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-interface NeumorphicBaseProps extends BoxProps {
+interface NeumorphicProps {
   variant?: 'flat' | 'pressed' | 'convex';
   size?: 'small' | 'medium' | 'large';
+  color?: string;
+  children: React.ReactNode;
+  className?: string;
 }
 
-const StyledBox = styled(Box)<NeumorphicBaseProps>(({ theme, variant = 'flat', size = 'medium' }) => {
-  const getShadow = () => {
-    const lightShadow = '8px 8px 16px rgba(163, 177, 198, 0.6)';
-    const darkShadow = '-8px -8px 16px rgba(255, 255, 255, 0.5)';
-    
-    switch (variant) {
-      case 'pressed':
-        return `inset ${lightShadow}, inset ${darkShadow}`;
-      case 'convex':
-        return `${lightShadow}, ${darkShadow}`;
-      case 'flat':
-      default:
-        return `4px 4px 8px rgba(163, 177, 198, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.3)`;
-    }
-  };
-
-  const getPadding = () => {
-    switch (size) {
-      case 'small':
-        return theme.spacing(0.5, 1);
-      case 'large':
-        return theme.spacing(2, 3);
-      case 'medium':
-      default:
-        return theme.spacing(1, 2);
-    }
-  };
-
-  return {
-    backgroundColor: theme.palette.background.default,
-    borderRadius: theme.shape.borderRadius,
-    boxShadow: getShadow(),
-    padding: getPadding(),
-    transition: 'all 0.2s ease-in-out',
-    '&:hover': {
-      boxShadow: variant === 'pressed' 
-        ? getShadow()
-        : `6px 6px 12px rgba(163, 177, 198, 0.5), -6px -6px 12px rgba(255, 255, 255, 0.4)`,
+const getShadow = (variant: string, size: string) => {
+  const shadows = {
+    flat: {
+      small: '2px 2px 4px rgba(0,0,0,0.1), -2px -2px 4px rgba(255,255,255,0.8)',
+      medium: '4px 4px 8px rgba(0,0,0,0.1), -4px -4px 8px rgba(255,255,255,0.8)',
+      large: '6px 6px 12px rgba(0,0,0,0.1), -6px -6px 12px rgba(255,255,255,0.8)'
     },
-    '&:active': {
-      boxShadow: `inset 4px 4px 8px rgba(163, 177, 198, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.3)`,
+    pressed: {
+      small: 'inset 2px 2px 4px rgba(0,0,0,0.1), inset -2px -2px 4px rgba(255,255,255,0.8)',
+      medium: 'inset 4px 4px 8px rgba(0,0,0,0.1), inset -4px -4px 8px rgba(255,255,255,0.8)',
+      large: 'inset 6px 6px 12px rgba(0,0,0,0.1), inset -6px -6px 12px rgba(255,255,255,0.8)'
+    },
+    convex: {
+      small: '2px 2px 4px rgba(0,0,0,0.1), -2px -2px 4px rgba(255,255,255,0.8), inset 1px 1px 2px rgba(255,255,255,0.8)',
+      medium: '4px 4px 8px rgba(0,0,0,0.1), -4px -4px 8px rgba(255,255,255,0.8), inset 2px 2px 4px rgba(255,255,255,0.8)',
+      large: '6px 6px 12px rgba(0,0,0,0.1), -6px -6px 12px rgba(255,255,255,0.8), inset 3px 3px 6px rgba(255,255,255,0.8)'
     }
   };
-});
-
-const NeumorphicBase: React.FC<NeumorphicBaseProps> = ({ 
-  children, 
-  variant = 'flat',
-  size = 'medium',
-  ...props 
-}) => {
-  return (
-    <StyledBox variant={variant} size={size} {...props}>
-      {children}
-    </StyledBox>
-  );
+  return shadows[variant as keyof typeof shadows][size as keyof typeof shadows.flat];
 };
 
-export default NeumorphicBase;
+const NeumorphicBase = styled('div')<NeumorphicProps>(({ theme, variant = 'flat', size = 'medium', color = theme.palette.background.default }) => ({
+  backgroundColor: color,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: getShadow(variant, size),
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    boxShadow: variant === 'flat' ? getShadow('convex', size) : getShadow(variant, size),
+  },
+  '&:active': {
+    boxShadow: getShadow('pressed', size),
+  }
+}));
+
+export const Neumorphic: React.FC<NeumorphicProps> = ({ children, ...props }) => {
+  return <NeumorphicBase {...props}>{children}</NeumorphicBase>;
+};
+
+export default Neumorphic; 

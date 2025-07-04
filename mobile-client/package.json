@@ -1,0 +1,67 @@
+{
+  "name": "voicevault-mobile",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "test": "jest",
+    "lint": "eslint .",
+    "install-deps": "node install.js",
+    "validate-deps": "node ../scripts/dependency-manager.js validate mobile",
+    "update-deps": "node ../scripts/dependency-manager.js update mobile",
+    "check-security": "node ../scripts/dependency-manager.js security mobile"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^13.0.0",
+    "@react-native-async-storage/async-storage": "^1.21.0",
+<<<<<<< HEAD
+    "@react-native-community/cli": "^18.0.0",
+=======
+>>>>>>> a1853dfd1097a4a53e26cd4724fea2fe5476425c
+    "@react-native-community/netinfo": "^11.2.1",
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/native-stack": "^6.9.17",
+    "axios": "^1.6.7",
+    "expo": "~50.0.6",
+    "expo-av": "~13.10.5",
+    "expo-file-system": "~16.0.5",
+    "expo-status-bar": "~1.11.1",
+    "react": "18.2.0",
+    "react-native": "0.73.4",
+    "react-native-safe-area-context": "4.8.2",
+    "react-native-screens": "~3.29.0",
+    "socket.io-client": "^4.7.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/eslint-parser": "^7.27.5",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/runtime": "^7.20.0",
+    "@react-native/babel-preset": "^0.73.19",
+    "@react-native/eslint-config": "^0.73.2",
+    "@react-native/metro-config": "^0.73.3",
+    "@react-native/typescript-config": "^0.73.1",
+    "@types/react": "~18.2.45",
+    "@types/react-test-renderer": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "babel-jest": "^29.6.3",
+    "eslint": "^8.56.0",
+    "eslint-config-universe": "^12.0.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-native": "^5.0.0",
+    "jest": "^29.2.1",
+    "prettier": "^3.2.5",
+    "react-test-renderer": "18.2.0",
+    "semver": "^7.5.4",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "private": true
+}

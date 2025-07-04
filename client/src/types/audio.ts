@@ -1,12 +1,8 @@
 export interface GeoLocation {
   latitude: number;
   longitude: number;
-  accuracy?: number;
-  altitude?: number;
-  altitudeAccuracy?: number;
-  heading?: number;
-  speed?: number;
-  timestamp?: number;
+  accuracy: number;
+  timestamp: number;
   address?: {
     street?: string;
     city?: string;
@@ -17,77 +13,105 @@ export interface GeoLocation {
 }
 
 export interface EmotionMetadata {
-  emotion: string;
-  confidence: number;
-  timestamp: number;
-  intensity?: number;
-  valence?: number;
-  arousal?: number;
+  primary: {
+    emotion: string;
+    confidence: number;
+    color: string;
+  };
+  secondary?: {
+    emotion: string;
+    confidence: number;
+    color: string;
+  };
+  intensity: number;
+  variability: number;
+  timeline: {
+    timestamp: number;
+    emotion: string;
+    intensity: number;
+  }[];
 }
 
-export interface AudioFile {
-  _id: string;
-  id: string; // For compatibility
-  filename: string;
-  originalName: string;
-  name: string; // Display name
-  size: number;
+export interface BaseAudioMetadata {
+  id: string;
+  name: string;
+  path: string;
   duration: number;
-  format: string;
-  sampleRate: number;
-  channels: number;
-  bitrate: number;
-  createdAt: string;
-  updatedAt: string;
-  processed: boolean;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  emotions?: EmotionMetadata[];
-  location?: GeoLocation;
-  tags?: string[];
-  transcription?: string;
-  userId: string;
-  path: string;
-  url?: string;
+  createdAt: Date;
+  status: 'processing' | 'completed' | 'error';
+  format: {
+    container: string;
+    codec: string;
+    sampleRate: number;
+    channels: number;
+    bitDepth?: number;
+    bitRate?: number;
+  };
+  waveform: number[];
+  duration_ms: number;
+  size_bytes: number;
+  transcription: {
+    text: string;
+    language: string;
+    confidence: number;
+  };
+  tags: {
+    recordingDevice?: string;
+    environment?: string;
+    speakerName?: string;
+    speakerGender?: string;
+    speakerAge?: number;
+    emotion?: string;
+    category?: string;
+    notes?: string;
+  };
+  emotion: EmotionMetadata;
+  location: GeoLocation;
 }
 
-export interface WordFile {
-  _id: string;
-  id: string; // For compatibility
-  filename: string;
-  originalName: string;
-  size: number;
-  createdAt: string;
-  updatedAt: string;
-  userId: string;
-  path: string;
-  url?: string;
-  content?: string;
+export interface AudioFile extends BaseAudioMetadata {
+  processingProgress?: number;
   wordCount?: number;
-  language?: string;
-  tags?: string[];
+  averageWordConfidence?: number;
+  noiseLevel?: number;
+  segments?: {
+    start: number;
+    end: number;
+    word: string;
+    confidence: number;
+  }[];
+}
+
+export interface WordFile extends BaseAudioMetadata {
+  originalAudioId: string;
   word: string;
   confidence: number;
-}
-
-export interface ProcessingStatus {
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  progress: number;
-  message?: string;
-  error?: string;
-}
-
-export interface AudioAnalysis {
-  emotions: EmotionMetadata[];
-  transcription?: string;
-  keywords?: string[];
-  sentiment?: {
-    score: number;
-    label: 'positive' | 'negative' | 'neutral';
+  phonemes: {
+    phoneme: string;
+    start: number;
+    end: number;
+    confidence: number;
+  }[];
+  position: {
+    start: number;
+    end: number;
+    wordIndex: number;
   };
-  audioFeatures?: {
-    tempo?: number;
-    pitch?: number;
-    volume?: number;
-    spectralCentroid?: number;
+  context: {
+    previousWord?: string;
+    nextWord?: string;
+    sentence: string;
   };
-}
+  acousticFeatures: {
+    pitch: number[];
+    intensity: number[];
+    formants: number[][];
+    voicing: boolean[];
+  };
+  classification: {
+    partOfSpeech: string;
+    isStopWord: boolean;
+    sentiment?: number;
+    isFiller: boolean;
+  };
+} 

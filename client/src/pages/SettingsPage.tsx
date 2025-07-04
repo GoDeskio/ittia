@@ -11,6 +11,7 @@ import {
   Tabs,
   Alert,
   useTheme,
+  Divider,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -24,6 +25,8 @@ import {
 } from '@mui/icons-material';
 import NotificationSettings from '../components/NotificationSettings';
 import StoragePathSettings from '../components/StoragePathSettings';
+import ApiTokenDisplay from '../components/ApiTokenDisplay';
+import { useAuth } from '../contexts/AuthContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -47,7 +50,20 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+/**
+ * SettingsPage Component
+ * 
+ * The main settings page for the application.
+ * Features:
+ * - API token management
+ * - Profile settings
+ * - Theme-aware styling
+ * - Responsive layout
+ */
 const SettingsPage: React.FC = () => {
+  // Auth and theme context hooks
+  const { user } = useAuth();
+  const { currentTheme } = useTheme();
   const [currentTab, setCurrentTab] = useState(0);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 
@@ -89,144 +105,42 @@ const SettingsPage: React.FC = () => {
     setTimeout(() => setShowSaveSuccess(false), 3000);
   };
 
+  // Return null if user is not authenticated
+  if (!user) {
+    return null;
+  }
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
+    // Main container with responsive max width
+    <Container maxWidth="md">
+      <Box sx={{ py: 4 }}>
+        {/* Page header */}
+        <Typography variant="h4" component="h1" gutterBottom>
           Settings
         </Typography>
 
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-          <Tabs value={currentTab} onChange={handleTabChange} aria-label="settings tabs">
-            <Tab
-              icon={<FormatSizeIcon />}
-              iconPosition="start"
-              label="Appearance"
-              id="settings-tab-0"
-            />
-            <Tab
-              icon={<NotificationsIcon />}
-              iconPosition="start"
-              label="Notifications"
-              id="settings-tab-1"
-            />
-          </Tabs>
-        </Box>
-
-        <TabPanel value={currentTab} index={0}>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom>
-                Font Size
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                  <TextDecreaseIcon />
-                <Slider
-                  value={baseFontSize}
-                  onChange={handleBaseFontSizeChange}
-                  min={12}
-                  max={20}
-                  step={1}
-                  marks
-                  valueLabelDisplay="auto"
-                  sx={{ flexGrow: 1 }}
-                />
-                  <TextIncreaseIcon />
-              </Box>
-            </Grid>
-
-            <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom>
-                Header Scale
-              </Typography>
-              <Slider
-                value={headerScale}
-                onChange={handleHeaderScaleChange}
-                min={1}
-                max={2}
-                step={0.1}
-                marks
-                valueLabelDisplay="auto"
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom>
-                Table Scale
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <TableChartIcon />
-              <Slider
-                value={tableScale}
-                onChange={handleTableScaleChange}
-                  min={0.8}
-                max={1.5}
-                  step={0.1}
-                marks
-                valueLabelDisplay="auto"
-                  sx={{ flexGrow: 1 }}
-              />
-              </Box>
-            </Grid>
-
-            <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom>
-                UI Element Scale
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <AspectRatioIcon />
-              <Slider
-                value={elementScale}
-                onChange={handleElementScaleChange}
-                  min={0.8}
-                max={1.5}
-                  step={0.1}
-                marks
-                valueLabelDisplay="auto"
-                  sx={{ flexGrow: 1 }}
-                />
-              </Box>
-            </Grid>
-
-            <Grid item xs={12}>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
-                <Button
-                  startIcon={<ResetIcon />}
-                  onClick={handleResetAppearance}
-                  variant="outlined"
-                >
-                  Reset to Defaults
-                </Button>
-                <Button
-                  startIcon={<RefreshIcon />}
-                  onClick={handleSaveSettings}
-                  variant="contained"
-                >
-                  Save Changes
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </TabPanel>
-
-        <TabPanel value={currentTab} index={1}>
-          <NotificationSettings />
-        </TabPanel>
-
-        <Box sx={{ mt: 4 }}>
-          <StoragePathSettings />
-        </Box>
-
-        {showSaveSuccess && (
-          <Alert
-            severity="success"
-            sx={{ mt: 2 }}
-            onClose={() => setShowSaveSuccess(false)}
-          >
-            Settings saved successfully!
-          </Alert>
-        )}
-      </Paper>
+        {/* Main settings content card */}
+        <Paper
+          elevation={3}
+          sx={{
+            p: 3,
+            mb: 4,
+            bgcolor: currentTheme === 'dark' ? 'background.paper' : 'background.default',
+          }}
+        >
+          {/* API token section */}
+          <ApiTokenDisplay apiToken={user.apiToken || ''} />
+          
+          {/* Visual separator between sections */}
+          <Divider sx={{ my: 3 }} />
+          
+          {/* Profile settings section */}
+          <Typography variant="h6" gutterBottom>
+            Profile Settings
+          </Typography>
+          {/* Add profile settings components here */}
+        </Paper>
+      </Box>
     </Container>
   );
 };

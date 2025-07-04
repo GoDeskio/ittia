@@ -96,8 +96,8 @@ export const PostFeed: React.FC<PostFeedProps> = ({ refreshTrigger }) => {
           return {
             ...post,
             likes: response.data.userLiked 
-              ? [...post.likes, user!._id]
-              : post.likes.filter(id => id !== user!._id)
+              ? [...post.likes, user!._id || user!.id]
+              : post.likes.filter(id => id !== (user!._id || user!.id))
           };
         }
         return post;

@@ -56,7 +56,7 @@ const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ..
     '& .MuiInputLabel-root': {
       color: colors.text,
       '&.Mui-focused': {
-        color: colors.primary,
+        color: colors.primaryColor,
       },
     },
     '& .Mui-disabled': {

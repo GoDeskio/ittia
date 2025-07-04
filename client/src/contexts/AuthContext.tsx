@@ -3,9 +3,15 @@ import axios from 'axios';
 
 interface User {
   id: string;
+  _id?: string; // MongoDB style ID for compatibility
   email: string;
   name: string;
   role: 'user' | 'admin' | 'god';
+  token?: string;
+  authMethods?: {
+    admin?: boolean;
+    god?: boolean;
+  };
   preferences?: {
     theme?: string;
     notifications?: boolean;
@@ -14,6 +20,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
@@ -23,6 +30,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  token: null,
   login: async () => {},
   logout: async () => {},
   register: async () => {},
@@ -40,6 +48,7 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedUser) {
       const userData = JSON.parse(savedUser);
       setUser(userData);
+      setToken(userData.token);
       // Set default authorization header
       axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
     }
@@ -61,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await axios.post('/api/auth/login', { email, password });
       const userData = response.data;
       setUser(userData);
+      setToken(userData.token);
       localStorage.setItem('user', JSON.stringify(userData));
       axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
       setError(null);
@@ -75,6 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       setUser(null);
+      setToken(null);
       localStorage.removeItem('user');
       delete axios.defaults.headers.common['Authorization'];
       setError(null);
@@ -108,6 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
+        token,
         login,
         logout,
         register,

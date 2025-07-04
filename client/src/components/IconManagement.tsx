@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, FormControl, Input, Select, Text, VStack, Image, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Typography,
+  Stack,
+  TextField,
+  Alert,
+  Card,
+  CardContent,
+} from '@mui/material';
 import axios from 'axios';
 
 interface IconType {
@@ -15,7 +28,7 @@ const IconManagement: React.FC = () => {
   const [selectedIconType, setSelectedIconType] = useState<string>('loading');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
-  const toast = useToast();
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const iconTypes: IconType[] = [
     { type: 'loading', currentUrl: '/assets/loading.gif', dimensions: { width: 400, height: 400 } },
@@ -29,12 +42,7 @@ const IconManagement: React.FC = () => {
     if (file) {
       // Validate file type
       if (!file.type.match(/^image\/(jpeg|png|gif)$/i)) {
-        toast({
-          title: 'Invalid file type',
-          description: 'Please upload a JPEG, PNG, or GIF file',
-          status: 'error',
-          duration: 3000,
-        });
+        setMessage({ type: 'error', text: 'Please upload a JPEG, PNG, or GIF file' });
         return;
       }
 
@@ -61,70 +69,73 @@ const IconManagement: React.FC = () => {
         },
       });
 
-      toast({
-        title: 'Success',
-        description: 'Icon updated successfully',
-        status: 'success',
-        duration: 3000,
-      });
+      setMessage({ type: 'success', text: 'Icon updated successfully' });
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to update icon',
-        status: 'error',
-        duration: 3000,
-      });
+      setMessage({ type: 'error', text: 'Failed to update icon' });
     }
   };
 
   return (
-    <Box p={6} bg="white" borderRadius="lg" shadow="md">
-      <VStack spacing={6} align="stretch">
-        <Text fontSize="2xl" fontWeight="bold">Icon Management</Text>
-        
-        <FormControl>
-          <Select
-            value={selectedIconType}
-            onChange={(e) => setSelectedIconType(e.target.value)}
-          >
-            {iconTypes.map((icon) => (
-              <option key={icon.type} value={icon.type}>
-                {icon.type.charAt(0).toUpperCase() + icon.type.slice(1)} Icon
-                ({icon.dimensions.width}x{icon.dimensions.height})
-              </option>
-            ))}
-          </Select>
-        </FormControl>
+    <Card sx={{ p: 3 }}>
+      <CardContent>
+        <Stack spacing={3}>
+          <Typography variant="h4" fontWeight="bold">Icon Management</Typography>
+          
+          {message && (
+            <Alert severity={message.type}>
+              {message.text}
+            </Alert>
+          )}
+          
+          <FormControl fullWidth>
+            <InputLabel>Icon Type</InputLabel>
+            <Select
+              value={selectedIconType}
+              onChange={(e) => setSelectedIconType(e.target.value)}
+              label="Icon Type"
+            >
+              {iconTypes.map((icon) => (
+                <MenuItem key={icon.type} value={icon.type}>
+                  {icon.type.charAt(0).toUpperCase() + icon.type.slice(1)} Icon
+                  ({icon.dimensions.width}x{icon.dimensions.height})
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-        <FormControl>
-          <Input
+          <TextField
             type="file"
-            accept="image/jpeg,image/png,image/gif"
+            inputProps={{ accept: "image/jpeg,image/png,image/gif" }}
             onChange={handleFileSelect}
+            helperText="Select an image file to upload"
           />
-        </FormControl>
 
-        {previewUrl && (
-          <Box>
-            <Text mb={2}>Preview:</Text>
-            <Image
-              src={previewUrl}
-              alt="Preview"
-              maxH="200px"
-              objectFit="contain"
-            />
-          </Box>
-        )}
+          {previewUrl && (
+            <Box>
+              <Typography variant="body1" sx={{ mb: 1 }}>Preview:</Typography>
+              <Box
+                component="img"
+                src={previewUrl}
+                alt="Preview"
+                sx={{
+                  maxHeight: 200,
+                  maxWidth: '100%',
+                  objectFit: 'contain',
+                }}
+              />
+            </Box>
+          )}
 
-        <Button
-          colorScheme="blue"
-          onClick={handleUpload}
-          isDisabled={!selectedFile}
-        >
-          Upload Icon
-        </Button>
-      </VStack>
-    </Box>
+          <Button
+            variant="contained"
+            onClick={handleUpload}
+            disabled={!selectedFile}
+          >
+            Upload Icon
+          </Button>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 };
 

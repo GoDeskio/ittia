@@ -54,7 +54,7 @@ VoiceVault is a comprehensive voice recording and management system with desktop
 1. Install dependencies:
 ```bash
 cd server
-npm install
+pnpm install
 ```
 
 2. Set up environment variables:
@@ -65,12 +65,12 @@ cp .env.example .env
 
 3. Initialize the database:
 ```bash
-npm run db:init
+pnpm run db:init
 ```
 
 4. Start the server:
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ### Desktop Application
@@ -78,16 +78,16 @@ npm run dev
 1. Install dependencies:
 ```bash
 cd desktop-client
-npm run install-deps
+pnpm run install-deps
 ```
 
 2. Start the application:
 ```bash
 # Development
-npm run electron-dev
+pnpm run electron-dev
 
 # Production build
-npm run electron-pack
+pnpm run electron-pack
 ```
 
 ### Mobile Application
@@ -95,16 +95,16 @@ npm run electron-pack
 1. Install dependencies:
 ```bash
 cd mobile-client
-npm run install-deps
+pnpm run install-deps
 ```
 
 2. Start the application:
 ```bash
 # iOS
-npm run ios
+pnpm run ios
 
 # Android
-npm run android
+pnpm run android
 ```
 
 ### GitLab Setup
@@ -138,16 +138,16 @@ Both applications support the following dependency management commands:
 
 ```bash
 # Install dependencies
-npm run install-deps
+pnpm run install-deps
 
 # Validate dependency versions
-npm run validate-deps
+pnpm run validate-deps
 
 # Update dependencies
-npm run update-deps
+pnpm run update-deps
 
 # Check for security vulnerabilities
-npm run check-security
+pnpm run check-security
 ```
 
 The dependency manager ensures:
@@ -196,15 +196,15 @@ voicevault/
 ```bash
 # Server tests
 cd server
-npm test
+pnpm test
 
 # Desktop tests
 cd desktop-client
-npm test
+pnpm test
 
 # Mobile tests
 cd mobile-client
-npm test
+pnpm test
 ```
 
 ### Building
@@ -212,14 +212,14 @@ npm test
 ```bash
 # Desktop application
 cd desktop-client
-npm run electron-pack
+pnpm run electron-pack
 
 # Mobile application
 cd mobile-client
 # iOS
-npm run ios
+pnpm run ios
 # Android
-npm run android
+pnpm run android
 ```
 
 ## Security

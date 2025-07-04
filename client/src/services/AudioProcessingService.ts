@@ -348,4 +348,5 @@ class AudioProcessingService {
   }
 }
 
-export default AudioProcessingService; 
+export default AudioProcessingService;
+export type { AudioFile, WordFile } from '../types/audio'; 

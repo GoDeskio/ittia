@@ -64,13 +64,13 @@ const NeumorphicSelect: React.FC<NeumorphicSelectProps> = ({ options, children, 
     color: colors.text,
     transition: `all ${animationSettings.transitionDuration}ms ${animationSettings.transitionEasing}`,
     '&:hover': {
-      backgroundColor: `${colors.primary}22`,
+      backgroundColor: `${colors.primaryColor}22`,
       transform: `scale(${animationSettings.hoverScale})`,
     },
     '&.Mui-selected': {
-      backgroundColor: `${colors.primary}33`,
+      backgroundColor: `${colors.primaryColor}33`,
       '&:hover': {
-        backgroundColor: `${colors.primary}44`,
+        backgroundColor: `${colors.primaryColor}44`,
       },
     },
   }));

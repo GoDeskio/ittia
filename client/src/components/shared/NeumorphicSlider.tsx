@@ -60,7 +60,7 @@ const NeumorphicSlider: React.FC<NeumorphicSliderProps> = ({ size = 'medium', ..
       height: currentSize.trackHeight,
       border: 'none',
       borderRadius: currentSize.trackHeight / 2,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primaryColor,
       transition: `all ${animationSettings.transitionDuration}ms ${animationSettings.transitionEasing}`,
     },
     '& .MuiSlider-thumb': {
@@ -95,7 +95,7 @@ const NeumorphicSlider: React.FC<NeumorphicSliderProps> = ({ size = 'medium', ..
     },
     '&:hover': {
       '& .MuiSlider-track': {
-        backgroundColor: colors.primary,
+        backgroundColor: colors.primaryColor,
       },
     },
   }));

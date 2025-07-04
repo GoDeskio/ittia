@@ -83,8 +83,9 @@ const CachePage: React.FC = () => {
     }
   };
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleString();
+  const formatDate = (date: Date | string) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleString();
   };
 
   const formatDuration = (seconds: number) => {

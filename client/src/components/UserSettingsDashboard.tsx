@@ -54,7 +54,7 @@ interface DevicePermission {
 }
 
 export const UserSettingsDashboard: React.FC = () => {
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
   const [authMethods, setAuthMethods] = useState<AuthMethod[]>([
     { id: 'email', name: 'Email & Password', icon: <EmailIcon />, enabled: true },
     { id: 'google', name: 'Google', icon: <GoogleIcon />, enabled: false },
@@ -276,4 +276,6 @@ export const UserSettingsDashboard: React.FC = () => {
       </Grid>
     </Box>
   );
-}; 
+};
+
+export default UserSettingsDashboard; 

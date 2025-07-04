@@ -75,14 +75,14 @@ const ForgotCredentials: React.FC = () => {
           <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
             <NeumorphicButton
               fullWidth
-              variant="contained"
+              variant="convex"
               type="submit"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Sending...' : 'Send Credentials'}
             </NeumorphicButton>
             <NeumorphicButton
-              variant="outlined"
+              variant="flat"
               onClick={() => navigate('/login')}
             >
               Back

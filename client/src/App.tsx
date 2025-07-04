@@ -58,7 +58,7 @@ class ErrorBoundary extends React.Component<
 }
 
 const AppContent: React.FC = () => {
-  const { theme } = useTheme();
+  const { colors } = useTheme();
   const { user } = useAuth();
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
 
@@ -102,7 +102,7 @@ const AppContent: React.FC = () => {
                 path="/admin"
                 element={
                   <AdminRoute>
-                    {user?.authMethods.admin ? (
+                    {user?.authMethods?.admin ? (
                       <AdminDashboard />
                     ) : (
                       <Navigate to="/" />
@@ -122,7 +122,7 @@ const AppContent: React.FC = () => {
                 path="/error-logs"
                 element={
                   <PrivateRoute>
-                    {user?.authMethods.admin ? (
+                    {user?.authMethods?.admin ? (
                       <ErrorLogDashboard />
                     ) : (
                       <Navigate to="/" />

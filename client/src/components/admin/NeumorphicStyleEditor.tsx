@@ -60,8 +60,8 @@ interface StylePreset {
     useInsetShadow: boolean;
   };
   colors: {
-    primary: string;
-    secondary: string;
+    primaryColor: string;
+    secondaryColor: string;
     background: string;
     text: string;
     [key: string]: string;
@@ -126,7 +126,7 @@ const NeumorphicStyleEditor: React.FC = () => {
     updatePreview(newSettings);
   };
 
-  const handleColorChange = (color: any, type: 'primary' | 'secondary' | 'background') => {
+  const handleColorChange = (color: any, type: 'primaryColor' | 'secondaryColor' | 'background') => {
     updateColors({ [type]: color.hex });
   };
 
@@ -337,11 +337,11 @@ const NeumorphicStyleEditor: React.FC = () => {
             </AccordionSummary>
             <AccordionDetails>
               <Grid container spacing={2}>
-                {(['primary', 'secondary', 'background'] as const).map((colorType) => (
+                {(['primaryColor', 'secondaryColor', 'background'] as const).map((colorType) => (
                   <Grid item xs={12} key={colorType}>
                     <Box sx={{ mb: 2 }}>
                       <Typography gutterBottom sx={{ textTransform: 'capitalize' }}>
-                        {colorType} Color
+                        {colorType.replace('Color', '')} Color
                       </Typography>
                       <Box
                         sx={{
@@ -416,7 +416,7 @@ const NeumorphicStyleEditor: React.FC = () => {
         >
           <ChromePicker
             color={colors[colorPicker.type as keyof typeof colors]}
-            onChange={(color) => handleColorChange(color, colorPicker.type as 'primary' | 'secondary' | 'background')}
+            onChange={(color) => handleColorChange(color, colorPicker.type as 'primaryColor' | 'secondaryColor' | 'background')}
           />
           <Button
             fullWidth

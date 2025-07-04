@@ -29,7 +29,7 @@ import {
   Image as ImageIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+// import { DatePicker } from '@mui/x-date-pickers';
 import { format } from 'date-fns';
 
 interface ErrorLog {
@@ -143,17 +143,23 @@ export const ErrorLogDashboard: React.FC = () => {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={3}>
-            <DatePicker
+            <TextField
+              fullWidth
               label="Start Date"
-              value={filters.startDate}
-              onChange={(date: Date | null) => setFilters(prev => ({ ...prev, startDate: date }))}
+              type="date"
+              value={filters.startDate ? filters.startDate.toISOString().split('T')[0] : ''}
+              onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value ? new Date(e.target.value) : null }))}
+              InputLabelProps={{ shrink: true }}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
-            <DatePicker
+            <TextField
+              fullWidth
               label="End Date"
-              value={filters.endDate}
-              onChange={(date: Date | null) => setFilters(prev => ({ ...prev, endDate: date }))}
+              type="date"
+              value={filters.endDate ? filters.endDate.toISOString().split('T')[0] : ''}
+              onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value ? new Date(e.target.value) : null }))}
+              InputLabelProps={{ shrink: true }}
             />
           </Grid>
           <Grid item xs={12} sm={3}>

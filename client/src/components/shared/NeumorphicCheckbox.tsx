@@ -62,7 +62,7 @@ const NeumorphicCheckbox: React.FC<NeumorphicCheckboxProps> = ({ size = 'medium'
     },
     '&.Mui-checked': {
       '& .MuiSvgIcon-root': {
-        backgroundColor: colors.primary,
+        backgroundColor: colors.primaryColor,
         color: colors.background,
         boxShadow: getCheckboxShadow(true),
       },

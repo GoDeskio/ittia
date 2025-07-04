@@ -195,14 +195,14 @@ const Registration: React.FC = () => {
           <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
             <NeumorphicButton
               fullWidth
-              variant="contained"
+              variant="convex"
               type="submit"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Creating Account...' : 'Create Account'}
             </NeumorphicButton>
             <NeumorphicButton
-              variant="outlined"
+              variant="flat"
               onClick={() => navigate('/login')}
             >
               Back to Login

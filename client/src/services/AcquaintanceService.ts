@@ -239,6 +239,12 @@ class AcquaintanceService {
     return response.data;
   }
 
+  // Get single acquaintance by ID
+  public async getAcquaintance(id: string): Promise<Acquaintance> {
+    const response = await axios.get(`${this.API_BASE_URL}/${id}`);
+    return response.data;
+  }
+
   // Get unknown voice recordings
   public async getUnknownRecordings(): Promise<UnknownVoiceRecording[]> {
     const response = await axios.get(`${this.API_BASE_URL}/unknown`);
@@ -311,4 +317,5 @@ class AcquaintanceService {
   }
 }
 
-export default AcquaintanceService; 
+export default AcquaintanceService;
+export type { Acquaintance, UnknownVoiceRecording } from '../types/acquaintance'; 

@@ -20,7 +20,7 @@ import {
   Tooltip,
   Tabs,
 } from '@mui/material';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { TabContext, TabList } from '@mui/lab';
 import Tab from '@mui/material/Tab';
 import {
   Download as DownloadIcon,

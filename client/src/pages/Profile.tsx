@@ -36,7 +36,7 @@ import {
   StyledTabs,
   StyledTab,
 } from '../components/shared/StyledComponents';
-import { useStyle } from '../contexts/StyleContext';
+import { useTheme } from '../contexts/ThemeContext';
 import ProfileCustomization from '../components/ProfileCustomization';
 
 interface Post {
@@ -62,7 +62,7 @@ interface Post {
 }
 
 const Profile: React.FC<{ userId: string }> = ({ userId }) => {
-  const { stylePreferences, bannerImage, isCurrentUser } = useStyle();
+  const { colors, bannerImage, isCurrentUser } = useTheme();
   const [activeTab, setActiveTab] = React.useState(0);
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
@@ -94,7 +94,7 @@ const Profile: React.FC<{ userId: string }> = ({ userId }) => {
   }
 
   // Use the profile's style preferences if viewing another user's profile
-  const displayStyles = isCurrentUser(userId) ? stylePreferences : profile.stylePreferences;
+  const displayStyles = isCurrentUser(userId) ? colors : profile.stylePreferences;
   const displayBanner = isCurrentUser(userId) ? bannerImage : profile.bannerImage;
 
   return (

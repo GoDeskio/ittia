@@ -67,7 +67,7 @@ const NeumorphicRadio: React.FC<NeumorphicRadioProps> = ({ size = 'medium', ...p
         width: currentSize.innerSize,
         height: currentSize.innerSize,
         borderRadius: '50%',
-        backgroundColor: colors.primary,
+        backgroundColor: colors.primaryColor,
         transform: 'translate(-50%, -50%) scale(0)',
         transition: `transform ${animationSettings.transitionDuration}ms ${animationSettings.transitionEasing}`,
       },

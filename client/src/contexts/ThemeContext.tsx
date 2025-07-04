@@ -29,6 +29,7 @@ interface StylePreferences {
   commentBoxColor: string;
   background: string;
   text: string;
+  [key: string]: string; // Index signature for compatibility
 }
 
 interface BannerImage {
@@ -127,7 +128,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     try {
       await axios.put(`/api/users/${user.id}/style-preferences`, { stylePreferences: newColors });
-      setColors(prev => ({ ...prev, ...newColors }));
+      setColors(prev => {
+        const updatedColors: StylePreferences = { ...prev };
+        Object.entries(newColors).forEach(([key, value]) => {
+          if (typeof value === 'string' && key in updatedColors) {
+            (updatedColors as any)[key] = value;
+          }
+        });
+        return updatedColors;
+      });
     } catch (error) {
       console.error('Failed to update style preferences:', error);
       throw error;

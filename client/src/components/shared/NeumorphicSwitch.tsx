@@ -65,7 +65,7 @@ const NeumorphicSwitch: React.FC<NeumorphicSwitchProps> = ({ size = 'medium', ..
         transform: 'translateX(100%)',
         color: colors.background,
         '& + .MuiSwitch-track': {
-          backgroundColor: colors.primary,
+          backgroundColor: colors.primaryColor,
           opacity: 1,
           border: 0,
         },

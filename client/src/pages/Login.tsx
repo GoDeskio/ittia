@@ -84,14 +84,14 @@ const Login: React.FC = () => {
           <Box sx={{ display: 'flex', gap: 2 }}>
             <NeumorphicButton
               fullWidth
-              variant="contained"
+              variant="convex"
               type="submit"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Signing In...' : 'Sign In'}
             </NeumorphicButton>
             <NeumorphicButton
-              variant="outlined"
+              variant="flat"
               onClick={() => navigate('/register')}
             >
               Register
@@ -100,7 +100,7 @@ const Login: React.FC = () => {
 
           <Box sx={{ textAlign: 'center' }}>
             <NeumorphicButton
-              variant="text"
+              variant="flat"
               onClick={() => navigate('/forgot-credentials')}
               sx={{ textTransform: 'none' }}
             >

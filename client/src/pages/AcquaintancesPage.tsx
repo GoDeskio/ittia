@@ -34,7 +34,8 @@ import {
   InputLabel,
   Select,
 } from '@mui/material';
-import { TreeView, TreeItem } from '@mui/x-tree-view';
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import {
   Person as PersonIcon,
   Edit as EditIcon,
@@ -325,7 +326,7 @@ const AcquaintancesPage: React.FC = () => {
     return folders.map(folder => (
       <TreeItem
         key={folder.id}
-        nodeId={folder.id}
+        itemId={folder.id}
         label={
           <Box sx={{ display: 'flex', alignItems: 'center', p: 0.5 }}>
             {folder.icon === 'family' ? (
@@ -383,12 +384,9 @@ const AcquaintancesPage: React.FC = () => {
             <Typography variant="h6" gutterBottom>
               Folders
             </Typography>
-            <TreeView
-              defaultCollapseIcon={<ExpandMoreIcon />}
-              defaultExpandIcon={<ChevronRightIcon />}
-            >
+            <SimpleTreeView>
               {renderFolderTree(folders)}
-            </TreeView>
+            </SimpleTreeView>
           </Box>
         </Drawer>
 

@@ -209,7 +209,7 @@ const Messages: React.FC = () => {
                       key={message._id}
                       sx={{
                         display: 'flex',
-                        justifyContent: message.sender._id === user?._id ? 'flex-end' : 'flex-start',
+                        justifyContent: message.sender._id === (user?._id || user?.id) ? 'flex-end' : 'flex-start',
                         mb: 2
                       }}
                     >
@@ -218,8 +218,8 @@ const Messages: React.FC = () => {
                           maxWidth: '70%',
                           p: 2,
                           borderRadius: 2,
-                          bgcolor: message.sender._id === user?._id ? 'primary.main' : 'grey.200',
-                          color: message.sender._id === user?._id ? 'white' : 'text.primary'
+                          bgcolor: message.sender._id === (user?._id || user?.id) ? 'primary.main' : 'grey.200',
+                          color: message.sender._id === (user?._id || user?.id) ? 'white' : 'text.primary'
                         }}
                       >
                         <Typography variant="body1">{message.content}</Typography>

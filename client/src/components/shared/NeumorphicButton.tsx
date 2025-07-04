@@ -3,7 +3,7 @@ import { Button, ButtonProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Neumorphic from './NeumorphicBase';
 
-interface NeumorphicButtonProps extends ButtonProps {
+interface NeumorphicButtonProps extends Omit<ButtonProps, 'variant'> {
   variant?: 'flat' | 'pressed' | 'convex';
   size?: 'small' | 'medium' | 'large';
 }

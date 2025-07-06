@@ -1,0 +1,20 @@
+{
+  "name": "voicevault-shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and types for VoiceVault",
+  "main": "index.js",
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "rimraf": "^6.0.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

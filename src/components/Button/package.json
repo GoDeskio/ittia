@@ -1,0 +1,27 @@
+{
+  "name": "@my-scope/button",
+  "version": "1.0.0",
+  "description": "Neumorphic Button component",
+  "main": "index.tsx",
+  "types": "index.tsx",
+  "scripts": {
+    "build": "bit build",
+    "test": "bit test"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^4.9.0"
+  },
+  "keywords": [
+    "button",
+    "component",
+    "react",
+    "neumorphic",
+    "ui"
+  ]
+}

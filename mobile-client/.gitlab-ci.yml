@@ -1,0 +1,148 @@
+image: node:18
+
+variables:
+  ANDROID_HOME: /opt/android-sdk
+  GRADLE_USER_HOME: ${CI_PROJECT_DIR}/.gradle
+  NODE_VERSION: "18"
+  ANDROID_COMPILE_SDK: "33"
+  ANDROID_BUILD_TOOLS: "33.0.0"
+  ANDROID_TARGET_SDK: "33"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .gradle/
+    - node_modules/
+    - android/app/build/
+    - ios/Pods/
+    - ~/.gradle/caches/
+
+stages:
+  - setup
+  - test
+  - build
+  - deploy
+
+# Android specific jobs
+android-setup:
+  stage: setup
+  image: node:18
+  script:
+    - npm install -g pnpm
+    - pnpm install
+    - cd android
+    - ./gradlew clean
+    - ./gradlew dependencies
+  only:
+    - android
+    - main
+
+android-test:
+  stage: test
+  image: jangrewe/gitlab-ci-android
+  script:
+    - cd android
+    - ./gradlew test
+    - ./gradlew lint
+  artifacts:
+    reports:
+      junit: android/app/build/test-results/**/TEST-*.xml
+  only:
+    - android
+    - main
+
+android-build:
+  stage: build
+  image: jangrewe/gitlab-ci-android
+  script:
+    - cd android
+    - echo $ANDROID_SIGNING_KEY > app/keystore.jks.base64
+    - base64 -d app/keystore.jks.base64 > app/keystore.jks
+    - ./gradlew assembleRelease
+  artifacts:
+    paths:
+      - android/app/build/outputs/apk/release/
+    expire_in: 1 week
+  only:
+    - android
+    - main
+
+android-deploy:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - apk add --no-cache curl
+    - |
+      curl --request POST \
+        --form "token=${CI_JOB_TOKEN}" \
+        --form "ref=main" \
+        --form "variables[ANDROID_APP]=true" \
+        --form "variables[VERSION]=${CI_COMMIT_SHA}" \
+        "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_ID}/trigger/pipeline"
+  only:
+    - android
+    - main
+
+# iOS specific jobs
+ios-setup:
+  stage: setup
+  image: node:18
+  script:
+    - npm install -g pnpm
+    - pnpm install
+    - cd ios
+    - pod install
+    - pod repo update
+  only:
+    - ios
+    - main
+
+ios-test:
+  stage: test
+  image: xcode:latest
+  script:
+    - cd ios
+    - xcodebuild test -workspace VoiceVault.xcworkspace -scheme VoiceVault -destination 'platform=iOS Simulator,name=iPhone 14'
+  artifacts:
+    reports:
+      junit: ios/build/test-results/*.xml
+  only:
+    - ios
+    - main
+
+ios-build:
+  stage: build
+  image: xcode:latest
+  script:
+    - cd ios
+    - echo $IOS_SIGNING_CERTIFICATE > cert.p12.base64
+    - base64 -d cert.p12.base64 > cert.p12
+    - security create-keychain -p $IOS_KEYCHAIN_PASSWORD build.keychain
+    - security import cert.p12 -k build.keychain -P $IOS_SIGNING_PASSWORD -A
+    - security set-keychain-settings build.keychain
+    - security default-keychain -s build.keychain
+    - xcodebuild -workspace VoiceVault.xcworkspace -scheme VoiceVault -configuration Release -archivePath VoiceVault.xcarchive archive
+    - xcodebuild -exportArchive -archivePath VoiceVault.xcarchive -exportOptionsPlist exportOptions.plist -exportPath ./build
+  artifacts:
+    paths:
+      - ios/build/
+    expire_in: 1 week
+  only:
+    - ios
+    - main
+
+ios-deploy:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - apk add --no-cache curl
+    - |
+      curl --request POST \
+        --form "token=${CI_JOB_TOKEN}" \
+        --form "ref=main" \
+        --form "variables[IOS_APP]=true" \
+        --form "variables[VERSION]=${CI_COMMIT_SHA}" \
+        "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_ID}/trigger/pipeline"
+  only:
+    - ios
+    - main 

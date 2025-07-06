@@ -1,0 +1,54 @@
+{
+  "android": {
+    "store": {
+      "type": "play-store",
+      "track": "internal",
+      "releaseStatus": "completed",
+      "whatsNewDirectory": "./android/release-notes"
+    },
+    "build": {
+      "type": "app-bundle",
+      "flavor": "production",
+      "buildType": "release"
+    },
+    "signing": {
+      "type": "jks",
+      "keyAlias": "voicevault",
+      "keyPassword": "${ANDROID_SIGNING_PASSWORD}",
+      "storePassword": "${ANDROID_SIGNING_PASSWORD}"
+    }
+  },
+  "ios": {
+    "store": {
+      "type": "app-store",
+      "teamId": "${IOS_TEAM_ID}",
+      "bundleId": "com.voicevault.app",
+      "skipWaitingForBuildProcessing": true
+    },
+    "build": {
+      "type": "app-store",
+      "scheme": "VoiceVault",
+      "configuration": "Release"
+    },
+    "signing": {
+      "type": "p12",
+      "certificatePassword": "${IOS_SIGNING_PASSWORD}",
+      "provisioningProfilePath": "${IOS_PROVISIONING_PROFILE}"
+    }
+  },
+  "versioning": {
+    "type": "semantic",
+    "pattern": "MAJOR.MINOR.PATCH",
+    "increment": "PATCH"
+  },
+  "notifications": {
+    "slack": {
+      "enabled": true,
+      "channel": "#mobile-releases"
+    },
+    "email": {
+      "enabled": true,
+      "recipients": ["team@voicevault.com"]
+    }
+  }
+} 

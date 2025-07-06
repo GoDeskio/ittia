@@ -45,7 +45,7 @@ A React Native mobile application for VoiceVault, featuring voice recording, ana
 
 1. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 2. Configure environment:
@@ -60,10 +60,10 @@ cp .env.example .env
 3. Build the application:
 ```bash
 # For iOS
-npm run build:ios
+pnpm run build:ios
 
 # For Android
-npm run build:android
+pnpm run build:android
 ```
 
 ## Dependencies
@@ -152,31 +152,31 @@ mobile-client/
 ### Running the App
 ```bash
 # Start Expo development server
-npm start
+pnpm start
 
 # Run on iOS simulator
-npm run ios
+pnpm run ios
 
 # Run on Android emulator
-npm run android
+pnpm run android
 ```
 
 ### Testing
 ```bash
 # Run unit tests
-npm test
+pnpm test
 
 # Run e2e tests
-npm run e2e
+pnpm run e2e
 ```
 
 ### Building
 ```bash
 # Build for iOS
-npm run build:ios
+pnpm run build:ios
 
 # Build for Android
-npm run build:android
+pnpm run build:android
 ```
 
 ## Contributing

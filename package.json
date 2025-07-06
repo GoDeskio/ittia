@@ -1,81 +1,33 @@
 {
   "name": "voicevault",
   "version": "1.0.0",
-  "description": "Advanced voice recognition and management system with emotion detection",
-  "author": "Dustin Pennington",
-  "license": "UNLICENSED",
+  "description": "A secure voice recording and management application with advanced AI-powered features and cross-platform synchronization",
   "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/voicevault.git"
-  },
   "scripts": {
-    "start": "node dist/server/src/index.js",
-    "dev": "concurrently --kill-others \"powershell -Command cd server; pnpm run dev\" \"powershell -Command cd client; pnpm run dev\"",
-    "dev:server": "cd server && pnpm run dev",
-    "dev:client": "cd client && pnpm run dev",
     "build": "pnpm run build:server && pnpm run build:client",
     "build:server": "cd server && pnpm run build",
     "build:client": "cd client && pnpm run build",
+    "build:desktop": "cd desktop-client && pnpm run build",
+    "build:mobile": "cd mobile-client && pnpm run build",
+    "build:minimal": "cd server && pnpm run build:minimal",
+    "start": "cd server && pnpm start",
+    "dev": "concurrently \"pnpm run dev:server\" \"pnpm run dev:client\"",
+    "dev:server": "cd server && pnpm run dev",
+    "dev:client": "cd client && pnpm run dev",
     "test": "pnpm run test:server && pnpm run test:client",
     "test:server": "cd server && pnpm test",
     "test:client": "cd client && pnpm test",
-    "install:all": "pnpm install && cd server && pnpm install && cd ../client && pnpm install",
+    "install:all": "pnpm install && cd server && pnpm install && cd ../client && pnpm install && cd ../desktop-client && pnpm install && cd ../mobile-client && pnpm install",
     "clean": "pnpm run clean:server && pnpm run clean:client",
-    "clean:server": "cd server && rm -rf node_modules dist",
-    "clean:client": "cd client && rm -rf node_modules build",
-    "desktop:setup": "powershell -ExecutionPolicy Bypass -File ./run-desktop-app.ps1",
-    "desktop:dev": "powershell -ExecutionPolicy Bypass -File ./run-desktop-app.ps1 -SkipInstall",
-    "desktop:build": "powershell -ExecutionPolicy Bypass -File ./run-desktop-app.ps1 -ProductionBuild",
-    "desktop:clean": "powershell -ExecutionPolicy Bypass -File ./run-desktop-app.ps1 -CleanInstall",
-    "desktop:shortcut": "powershell -ExecutionPolicy Bypass -File ./create-desktop-shortcut.ps1",
-    "bit:install": "bit install",
-    "bit:build": "bit build",
-    "bit:test": "bit test",
-    "bit:start": "bit start",
-    "bit:status": "bit status",
-    "bit:list": "bit list",
-    "bit:compile": "bit compile",
-    "bit:snap": "bit snap -m",
-    "bit:tag": "bit tag -m",
-    "bit:export": "bit export",
-    "bit:add-components": "bit add src/components/Button --main index.tsx && bit add src/components/Card --main index.tsx"
+    "clean:server": "cd server && pnpm run clean",
+    "clean:client": "cd client && pnpm run clean"
   },
-  "keywords": [
-    "voice recognition",
-    "emotion detection",
-    "voice analysis",
-    "speaker identification",
-    "audio processing"
-  ],
-  "contributors": [
-    {
-      "name": "Dustin Pennington",
-      "email": "[Your email]",
-      "url": "[Your website/profile]"
-    }
-  ],
-  "copyright": "Copyright © 2024 Dustin Pennington. All rights reserved.",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  },
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
-  "packageManager": "pnpm@8.15.0",
-  "workspaces": [
-    "client",
-    "server",
-    "shared"
-  ],
-  "dependencies": {
-    "@chakra-ui/react": "^3.20.0",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/lab": "^7.0.0-beta.13",
-    "@mui/x-tree-view": "^8.5.1",
-    "@types/pg": "^8.15.4",
-    "pg": "^8.16.0"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  }
+  "packageManager": "pnpm@8.15.0"
 }

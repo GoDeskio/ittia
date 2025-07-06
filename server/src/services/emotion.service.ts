@@ -1,15 +1,13 @@
-import { EmotionAnalysis, EmotionMetadata } from '../models/emotion/types';
+import { EmotionAnalysis } from '../models/emotion/types';
 import { processVoiceEmotion } from '../models/emotion/processor';
 import { generateQRCode } from '../utils/qrcode';
-import { getGPSLocation } from '../utils/gps';
+import { getLocation } from '../utils/gps';
 import { generateApiToken } from '../utils/token';
 import { User } from '../models/User';
 import { CustomError } from '../middleware/errorHandler';
-import QRCode from 'qrcode';
-import path from 'path';
-import fs from 'fs';
+// import path from 'path';
 
-const EMOTION_COLORS = {
+const EMOTION_COLORS: Record<string, string> = {
   angry: '#FF0000',  // Red
   happy: '#FFD700',  // Gold
   neutral: '#808080', // Gray
@@ -33,32 +31,31 @@ export class EmotionService {
       const emotionResult = await processVoiceEmotion(audioFile.path);
       
       // Get GPS location
-      const location = await getGPSLocation();
+      const location = await getLocation();
 
       // Generate or get API token
-      const apiToken = user.apiToken || await generateApiToken();
-      if (!user.apiToken) {
-        user.apiToken = apiToken;
-        await user.save();
+      let apiToken = user.api_token;
+      if (!apiToken) {
+        apiToken = await generateApiToken();
+        await User.updateApiToken(parseInt(userId), apiToken);
       }
 
       // Create metadata for QR code
-      const metadata: EmotionMetadata = {
-        word,
-        emotion: emotionResult.emotion,
-        color: EMOTION_COLORS[emotionResult.emotion],
-        location: {
-          latitude: location.latitude,
-          longitude: location.longitude,
-          timestamp: location.timestamp.toISOString()
-        },
-        apiToken,
-        qrCode: '' // Will be updated after QR generation
-      };
+      // const metadata: EmotionMetadata = {
+      //   word,
+      //   emotion: emotionResult.emotion,
+      //   color: EMOTION_COLORS[emotionResult.emotion],
+      //   location: {
+      //     latitude: location.latitude,
+      //     longitude: location.longitude,
+      //     timestamp: location.timestamp.toISOString()
+      //   },
+      //   apiToken,
+      //   qrCode: '' // Will be updated after QR generation
+      // };
 
       // Generate QR code with word in the middle
-      const qrCodePath = path.join(__dirname, '../../uploads', `${Date.now()}_qr.png`);
-      await generateQRCode(metadata, word, qrCodePath);
+      const qrCodePath = await generateQRCode(audioFile.path);
 
       // Create emotion analysis record
       const analysis: EmotionAnalysis = {
@@ -67,7 +64,7 @@ export class EmotionService {
         word,
         audioUrl: audioFile.path,
         qrCodeUrl: qrCodePath,
-        emotion: emotionResult.emotion,
+        emotion: emotionResult.emotion as 'angry' | 'happy' | 'neutral' | 'sad',
         confidence: emotionResult.confidence,
         color: EMOTION_COLORS[emotionResult.emotion],
         location: {
@@ -75,7 +72,7 @@ export class EmotionService {
           longitude: location.longitude,
           timestamp: location.timestamp
         },
-        apiToken,
+        apiToken: apiToken as string,
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -87,7 +84,7 @@ export class EmotionService {
     }
   }
 
-  static async getStats(userId: string) {
+  static async getStats(_userId: string) {
     // TODO: Implement getting stats from database
     return {
       totalAnalyses: 0,
@@ -100,7 +97,7 @@ export class EmotionService {
     };
   }
 
-  static async getRecent(userId: string): Promise<EmotionAnalysis[]> {
+  static async getRecent(_userId: string): Promise<EmotionAnalysis[]> {
     // TODO: Implement getting recent analyses from database
     return [];
   }
@@ -117,7 +114,7 @@ interface EmotionResult {
   color: string;
 }
 
-export const analyzeEmotion = async (audioFilePath: string): Promise<EmotionResult> => {
+export const analyzeEmotion = async (_audioFilePath: string): Promise<EmotionResult> => {
   // Mock emotion analysis
   const emotions: EmotionAnalysis['emotion'][] = ['happy', 'sad', 'angry', 'neutral'];
   const randomEmotion = emotions[Math.floor(Math.random() * emotions.length)];

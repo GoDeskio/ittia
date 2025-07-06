@@ -20,6 +20,8 @@ import Layout from './components/Layout';
 import CyborgLoadingPage from './pages/CyborgLoadingPage';
 import AdminRoute from './components/AdminRoute';
 import PrivateRoute from './components/PrivateRoute';
+import UpdateNotification from './components/UpdateNotification';
+import { useUpdateChecker } from './hooks/useUpdateChecker';
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -62,6 +64,14 @@ const AppContent: React.FC = () => {
   const { user } = useAuth();
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
 
+  // Initialize update checker
+  const { updateResult } = useUpdateChecker({
+    autoCheck: true,
+    onUpdateAvailable: (result) => {
+      console.log('Update available:', result);
+    }
+  });
+
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
       event.preventDefault();
@@ -102,7 +112,7 @@ const AppContent: React.FC = () => {
                 path="/admin"
                 element={
                   <AdminRoute>
-                    {user?.authMethods?.admin ? (
+                    {user?.role === 'admin' ? (
                       <AdminDashboard />
                     ) : (
                       <Navigate to="/" />
@@ -122,7 +132,7 @@ const AppContent: React.FC = () => {
                 path="/error-logs"
                 element={
                   <PrivateRoute>
-                    {user?.authMethods?.admin ? (
+                    {user?.role === 'admin' ? (
                       <ErrorLogDashboard />
                     ) : (
                       <Navigate to="/" />
@@ -152,6 +162,9 @@ const AppContent: React.FC = () => {
               open={errorDialogOpen}
               onClose={() => setErrorDialogOpen(false)}
             />
+
+            {/* Update notification component */}
+            <UpdateNotification autoCheck={true} />
           </div>
         </Router>
       </ErrorBoundary>

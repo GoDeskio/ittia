@@ -10,7 +10,7 @@ import {
   Tab,
   Tabs,
   Alert,
-  useTheme,
+
   Divider,
 } from '@mui/material';
 import {
@@ -26,7 +26,9 @@ import {
 import NotificationSettings from '../components/NotificationSettings';
 import StoragePathSettings from '../components/StoragePathSettings';
 import ApiTokenDisplay from '../components/ApiTokenDisplay';
+import UpdateNotification from '../components/UpdateNotification';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -139,6 +141,18 @@ const SettingsPage: React.FC = () => {
             Profile Settings
           </Typography>
           {/* Add profile settings components here */}
+          
+          {/* Visual separator between sections */}
+          <Divider sx={{ my: 3 }} />
+          
+          {/* Update settings section */}
+          <Typography variant="h6" gutterBottom>
+            Application Updates
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Check for and install application updates to get the latest features and security improvements.
+          </Typography>
+          <UpdateNotification autoCheck={false} />
         </Paper>
       </Box>
     </Container>

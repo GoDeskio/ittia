@@ -15,6 +15,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import GroqService from '../services/GroqService';
+import { convertAudioToText } from '../utils/audioUtils';
 
 interface Message {
   role: 'user' | 'assistant';

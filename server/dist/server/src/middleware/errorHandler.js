@@ -9,7 +9,7 @@ class CustomError extends Error {
     }
 }
 exports.CustomError = CustomError;
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, _req, res, _next) => {
     console.error(err.stack);
     if (err instanceof CustomError) {
         return res.status(err.statusCode).json({

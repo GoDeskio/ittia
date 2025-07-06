@@ -38,7 +38,7 @@ app.use('/api/error', error_1.default);
 app.use('/api/messages', message_1.messageRoutes);
 app.use('/api/posts', post_1.postRoutes);
 app.use('/uploads', express_1.default.static(path_1.default.join(__dirname, '../uploads')));
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
     console.error(err.stack);
     res.status(500).json({ message: 'Something went wrong!' });
 });

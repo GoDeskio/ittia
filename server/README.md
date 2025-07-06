@@ -81,7 +81,7 @@ sudo systemctl restart redis
 
 4. Install Node.js dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 5. Install Python dependencies:
@@ -104,13 +104,13 @@ cp .env.example .env
 
 ### Development
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ### Production
 ```bash
-npm run build
-npm start
+pnpm run build
+pnpm start
 ```
 
 ## API Documentation
@@ -142,17 +142,17 @@ npm start
 
 ### Unit Tests
 ```bash
-npm test
+pnpm test
 ```
 
 ### Integration Tests
 ```bash
-npm run test:integration
+pnpm run test:integration
 ```
 
 ### Load Tests
 ```bash
-npm run test:load
+pnpm run test:load
 ```
 
 ## Deployment

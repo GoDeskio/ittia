@@ -34,7 +34,7 @@ export const authenticateAdmin = async (req: AdminAuthRequest, res: Response, ne
       role: admin.role,
     };
 
-    next();
+    return next();
   } catch (error) {
     return res.status(401).json({ error: 'Invalid token' });
   }
@@ -44,17 +44,17 @@ export const requireGodMode = (req: AdminAuthRequest, res: Response, next: NextF
   if (req.admin?.role !== 'god') {
     return res.status(403).json({ error: 'God mode access required' });
   }
-  next();
+  return next();
 };
 
 export const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = await User.findById((req.user as any)?._id);
-    if (!user || !user.authMethods.admin) {
+    const user = await User.findById((req.user as any)?.id);
+    if (!user || !user.is_admin) {
       return res.status(403).json({ message: 'Access denied. Admin privileges required.' });
     }
-    next();
+    return next();
   } catch (error) {
-    res.status(500).json({ message: 'Error checking admin privileges' });
+    return res.status(500).json({ message: 'Error checking admin privileges' });
   }
 }; 

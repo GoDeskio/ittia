@@ -6,17 +6,17 @@ import { defaultConfig } from '../config/upload';
 
 // Configure storage
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, _file, cb) => {
     cb(null, defaultConfig.uploadPath);
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
 
 // File filter function
-const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   if (defaultConfig.allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
@@ -25,7 +25,7 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilt
 };
 
 // Dynamic file size limit middleware
-export const getDynamicMulter = async (req: Request, res: Response, next: NextFunction) => {
+export const getDynamicMulter = async (_req: Request, _res: Response, _next: NextFunction) => {
   try {
     // Get current upload settings
     const settings = await UploadSettings.getSettings();
@@ -54,7 +54,7 @@ export const getDynamicMulter = async (req: Request, res: Response, next: NextFu
 };
 
 // Error handling middleware for multer
-export const handleMulterError = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const handleMulterError = (err: any, _req: Request, res: Response, next: NextFunction) => {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res.status(413).json({
@@ -65,7 +65,7 @@ export const handleMulterError = (err: any, req: Request, res: Response, next: N
       error: 'File upload error'
     });
   }
-  next(err);
+  return next(err);
 };
 
 // Middleware to check file size before upload
@@ -80,7 +80,7 @@ export const checkFileSize = async (req: Request, res: Response, next: NextFunct
         error: 'File size exceeds the allowed limit'
       });
     }
-    next();
+    return next();
   } catch (error) {
     // Fallback to default config if settings cannot be fetched
     if (contentLength > defaultConfig.maxFileSize) {
@@ -88,6 +88,6 @@ export const checkFileSize = async (req: Request, res: Response, next: NextFunct
         error: 'File size exceeds the allowed limit'
       });
     }
-    next();
+    return next();
   }
 }; 

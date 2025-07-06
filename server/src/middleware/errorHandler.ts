@@ -12,9 +12,9 @@ export class CustomError extends Error {
 
 export const errorHandler = (
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   console.error(err.stack);
 

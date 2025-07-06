@@ -27,18 +27,19 @@ export const convertAudioToText = async (audioBlob: Blob): Promise<string> => {
           source.buffer = audioBuffer;
 
           // Create speech recognition
-          const recognition = new (window.SpeechRecognition || (window as any).webkitSpeechRecognition)();
+          const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+          const recognition = new SpeechRecognition();
           recognition.continuous = false;
           recognition.interimResults = false;
           recognition.lang = 'en-US';
 
           // Handle recognition results
-          recognition.onresult = (event) => {
+          recognition.onresult = (event: any) => {
             const transcript = event.results[0][0].transcript;
             resolve(transcript);
           };
 
-          recognition.onerror = (event) => {
+          recognition.onerror = (event: any) => {
             reject(new Error(`Speech recognition error: ${event.error}`));
           };
 

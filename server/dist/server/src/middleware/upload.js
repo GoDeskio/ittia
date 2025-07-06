@@ -9,15 +9,15 @@ const path_1 = __importDefault(require("path"));
 const UploadSettings_1 = require("../models/UploadSettings");
 const upload_1 = require("../config/upload");
 const storage = multer_1.default.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
         cb(null, upload_1.defaultConfig.uploadPath);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, file.fieldname + '-' + uniqueSuffix + path_1.default.extname(file.originalname));
     }
 });
-const fileFilter = (req, file, cb) => {
+const fileFilter = (_req, file, cb) => {
     if (upload_1.defaultConfig.allowedTypes.includes(file.mimetype)) {
         cb(null, true);
     }
@@ -25,7 +25,7 @@ const fileFilter = (req, file, cb) => {
         cb(new Error('Invalid file type'));
     }
 };
-const getDynamicMulter = async (req, res, next) => {
+const getDynamicMulter = async (_req, _res, _next) => {
     try {
         const settings = await UploadSettings_1.UploadSettings.getSettings();
         const upload = (0, multer_1.default)({
@@ -49,7 +49,7 @@ const getDynamicMulter = async (req, res, next) => {
     }
 };
 exports.getDynamicMulter = getDynamicMulter;
-const handleMulterError = (err, req, res, next) => {
+const handleMulterError = (err, _req, res, next) => {
     if (err instanceof multer_1.default.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
             return res.status(413).json({
@@ -60,7 +60,7 @@ const handleMulterError = (err, req, res, next) => {
             error: 'File upload error'
         });
     }
-    next(err);
+    return next(err);
 };
 exports.handleMulterError = handleMulterError;
 const checkFileSize = async (req, res, next) => {
@@ -72,7 +72,7 @@ const checkFileSize = async (req, res, next) => {
                 error: 'File size exceeds the allowed limit'
             });
         }
-        next();
+        return next();
     }
     catch (error) {
         if (contentLength > upload_1.defaultConfig.maxFileSize) {
@@ -80,7 +80,7 @@ const checkFileSize = async (req, res, next) => {
                 error: 'File size exceeds the allowed limit'
             });
         }
-        next();
+        return next();
     }
 };
 exports.checkFileSize = checkFileSize;

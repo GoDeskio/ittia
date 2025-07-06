@@ -1,11 +1,11 @@
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2';
-import { Strategy as InstagramStrategy } from 'passport-instagram';
+// import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+// import { Strategy as FacebookStrategy } from 'passport-facebook';
+// import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2';
+// import { Strategy as InstagramStrategy } from 'passport-instagram';
 import { User } from '../models/User';
-import { authConfig, jwtConfig } from './auth.config';
+import { jwtConfig } from './auth.config';
 
 export const configurePassport = () => {
   // JWT Strategy
@@ -30,6 +30,7 @@ export const configurePassport = () => {
   );
 
   // Google Strategy
+  /*
   passport.use(
     new GoogleStrategy(
       {
@@ -162,4 +163,5 @@ export const configurePassport = () => {
       }
     )
   );
+  */
 }; 

@@ -13,6 +13,47 @@ spec:
       labels:
         app: voicevault
     spec:
+      # Add init containers to check dependencies before starting the main container
+      initContainers:
+      # Check if PostgreSQL is ready
+      - name: check-db-ready
+        image: postgres:14-alpine
+        command: ['sh', '-c', 
+          'until pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER; do echo "Waiting for PostgreSQL"; sleep 2; done;']
+        env:
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: voicevault-config
+              key: postgres-host
+        - name: POSTGRES_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: voicevault-config
+              key: postgres-port
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: voicevault-secrets
+              key: postgres-user
+      
+      # Check if Redis is ready
+      - name: check-redis-ready
+        image: redis:6-alpine
+        command: ['sh', '-c', 
+          'until redis-cli -h $REDIS_HOST -p $REDIS_PORT ping; do echo "Waiting for Redis"; sleep 2; done;']
+        env:
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: voicevault-config
+              key: redis-host
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: voicevault-config
+              key: redis-port
+      
       containers:
       - name: voicevault
         image: voicevault:latest
@@ -29,6 +70,11 @@ spec:
             secretKeyRef:
               name: voicevault-secrets
               key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: voicevault-secrets
+              key: redis-url
         resources:
           requests:
             cpu: "100m"
@@ -48,5 +94,12 @@ spec:
             port: 3000
           initialDelaySeconds: 5
           periodSeconds: 5
+        # Add startup probe to give the application more time to start
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          failureThreshold: 30
+          periodSeconds: 10
       imagePullSecrets:
-      - name: regcred 
+      - name: regcred

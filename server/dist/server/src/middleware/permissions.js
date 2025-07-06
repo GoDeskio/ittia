@@ -13,7 +13,7 @@ const checkMobilePermissions = (req, res, next) => {
             });
         }
     }
-    next();
+    return next();
 };
 exports.checkMobilePermissions = checkMobilePermissions;
 //# sourceMappingURL=permissions.js.map

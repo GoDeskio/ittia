@@ -37,7 +37,7 @@ async function installMobile() {
     
     // Link native dependencies
     console.log('Linking native dependencies...');
-    execSync('npx react-native link', { stdio: 'inherit' });
+    execSync('pnpx react-native link', { stdio: 'inherit' });
     
     console.log('VoiceVault Mobile installation completed successfully!');
   } catch (error) {

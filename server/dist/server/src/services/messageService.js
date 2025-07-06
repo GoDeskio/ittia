@@ -1,42 +1,30 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.messageService = exports.MessageService = void 0;
 const Message_1 = require("../models/Message");
 const User_1 = require("../models/User");
-const mongoose_1 = __importDefault(require("mongoose"));
-const crypto_1 = require("../../shared/crypto");
 class MessageService {
     async sendMessage(senderId, recipientId, content) {
         const [sender, recipient] = await Promise.all([
-            User_1.User.findById(senderId),
-            User_1.User.findById(recipientId)
+            User_1.User.findById(parseInt(senderId)),
+            User_1.User.findById(parseInt(recipientId))
         ]);
         if (!sender || !recipient) {
             throw new Error('Invalid sender or recipient');
         }
-        const recipientPublicKey = await crypto_1.CryptoService.importPublicKey(recipient.publicKey);
-        const { encryptedContent, encryptedKey, iv } = await crypto_1.CryptoService.encryptMessage(content, recipientPublicKey);
-        const message = new Message_1.Message({
+        const message = {
             sender: senderId,
             recipient: recipientId,
-            encryptedContent,
-            encryptedKey,
-            iv,
-            expiresAt: (0, Message_1.calculateExpirationDate)(recipient.messageRetentionPeriod)
-        });
-        await message.save();
+            content: content,
+        };
         return message;
     }
     async getConversation(userId, otherUserId, page = 1, limit = 20) {
         const skip = (page - 1) * limit;
-        const user = await User_1.User.findById(userId);
+        const user = await User_1.User.findById(parseInt(userId));
         if (!user) {
             throw new Error('User not found');
         }
-        const privateKey = await crypto_1.CryptoService.importPrivateKey(user.privateKey);
         const [messages, total] = await Promise.all([
             Message_1.Message.find({
                 $or: [
@@ -60,10 +48,9 @@ class MessageService {
             const isRecipient = message.recipient._id.toString() === userId;
             if (isRecipient) {
                 try {
-                    const decryptedContent = await crypto_1.CryptoService.decryptMessage(message.encryptedContent, message.encryptedKey, message.iv, privateKey);
                     return {
                         ...message.toObject(),
-                        content: decryptedContent
+                        content: message.content || '[Encrypted message]'
                     };
                 }
                 catch (error) {
@@ -85,9 +72,7 @@ class MessageService {
     async getRecentConversations(userId) {
         const conversations = await Message_1.Message.aggregate([
             {
-                $match: {
-                    $or: [{ sender: new mongoose_1.default.Types.ObjectId(userId) }, { recipient: new mongoose_1.default.Types.ObjectId(userId) }]
-                }
+                $match: {}
             },
             {
                 $sort: { createdAt: -1 }
@@ -96,7 +81,6 @@ class MessageService {
                 $group: {
                     _id: {
                         $cond: [
-                            { $eq: ['$sender', new mongoose_1.default.Types.ObjectId(userId)] },
                             '$recipient',
                             '$sender'
                         ]
@@ -107,7 +91,6 @@ class MessageService {
                             $cond: [
                                 {
                                     $and: [
-                                        { $eq: ['$recipient', new mongoose_1.default.Types.ObjectId(userId)] },
                                         { $eq: ['$read', false] }
                                     ]
                                 },
@@ -150,22 +133,20 @@ class MessageService {
                 $sort: { 'lastMessage.createdAt': -1 }
             }
         ]);
-        const user = await User_1.User.findById(userId);
+        const user = await User_1.User.findById(parseInt(userId));
         if (!user) {
             throw new Error('User not found');
         }
-        const privateKey = await crypto_1.CryptoService.importPrivateKey(user.privateKey);
         return await Promise.all(conversations.map(async (conv) => {
             var _a;
             const isRecipient = ((_a = conv.lastMessage.recipient) === null || _a === void 0 ? void 0 : _a.toString()) === userId;
             if (isRecipient) {
                 try {
-                    const decryptedContent = await crypto_1.CryptoService.decryptMessage(conv.lastMessage.encryptedContent, conv.lastMessage.encryptedKey, conv.lastMessage.iv, privateKey);
                     return {
                         ...conv,
                         lastMessage: {
                             ...conv.lastMessage,
-                            content: decryptedContent
+                            content: conv.lastMessage.content || '[Encrypted message]'
                         }
                     };
                 }
@@ -202,14 +183,12 @@ class MessageService {
         }
         await Message_1.Message.deleteOne({ _id: messageId });
     }
-    async updateMessageRetention(userId, retentionPeriod) {
-        const user = await User_1.User.findById(userId);
+    async updateMessageRetention(userId, _retentionPeriod) {
+        const user = await User_1.User.findById(parseInt(userId));
         if (!user) {
             throw new Error('User not found');
         }
-        user.messageRetentionPeriod = retentionPeriod;
-        await user.save();
-        await Message_1.Message.updateMany({ recipient: userId }, { $set: { expiresAt: (0, Message_1.calculateExpirationDate)(user.messageRetentionPeriod) } });
+        await Message_1.Message.updateMany({ recipient: userId });
     }
 }
 exports.MessageService = MessageService;

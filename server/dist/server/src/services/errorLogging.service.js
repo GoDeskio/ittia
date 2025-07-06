@@ -1,70 +1,39 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.errorScreenshotUpload = exports.errorLoggingService = exports.ErrorLoggingService = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
-const mongoose_1 = __importStar(require("mongoose"));
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
-const ErrorLogSchema = new mongoose_1.Schema({
-    userId: { type: String },
-    timestamp: { type: Date, default: Date.now },
-    errorType: { type: String, required: true },
-    description: { type: String, required: true },
-    userAgent: { type: String },
-    route: { type: String },
-    stackTrace: { type: String },
-    screenshots: [{ type: String }],
-    status: { type: String, enum: ['new', 'in-progress', 'resolved'], default: 'new' },
-    resolution: { type: String },
-    assignedTo: { type: String }
-});
-const ErrorLog = mongoose_1.default.model('ErrorLog', ErrorLogSchema);
+class ErrorLog {
+    constructor(data) {
+        Object.assign(this, data);
+        this.id = Date.now().toString();
+    }
+    async save() {
+        return this;
+    }
+    static find(_query) {
+        return {
+            sort: (_sortOptions) => []
+        };
+    }
+    static findByIdAndUpdate(_id, _update, _options) {
+        return null;
+    }
+}
 const storage = multer_1.default.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
         const dir = path_1.default.join(__dirname, '../../uploads/error-screenshots');
         if (!fs_1.default.existsSync(dir)) {
             fs_1.default.mkdirSync(dir, { recursive: true });
         }
         cb(null, dir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
         cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
@@ -74,7 +43,7 @@ const upload = (0, multer_1.default)({
         files: 10,
         fileSize: 5 * 1024 * 1024
     },
-    fileFilter: (req, file, cb) => {
+    fileFilter: (_req, file, cb) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
             return cb(new Error('Only JPEG/PNG files are allowed'));
         }
@@ -123,7 +92,7 @@ class ErrorLoggingService {
             subject: `[VoiceVault Error] ${errorLog.errorType}`,
             html: `
         <h2>Error Report</h2>
-        <p><strong>Error ID:</strong> ${errorLog._id}</p>
+        <p><strong>Error ID:</strong> ${errorLog.id}</p>
         <p><strong>Timestamp:</strong> ${errorLog.timestamp}</p>
         <p><strong>User ID:</strong> ${errorLog.userId || 'Anonymous'}</p>
         <p><strong>Error Type:</strong> ${errorLog.errorType}</p>

@@ -31,7 +31,7 @@ async function installDesktop() {
     
     // Build the application
     console.log('Building desktop application...');
-    execSync('npm run build', { stdio: 'inherit' });
+    execSync('pnpm run build', { stdio: 'inherit' });
     
     console.log('VoiceVault Desktop installation completed successfully!');
   } catch (error) {

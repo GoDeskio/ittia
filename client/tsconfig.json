@@ -21,10 +21,5 @@
       "@shared/*": ["../types/*"]
     }
   },
-  "include": ["src", "../types"],
-  "references": [
-    {
-      "path": "../server"
-    }
-  ]
+  "include": ["src", "../types"]
 } 

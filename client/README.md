@@ -29,7 +29,7 @@ The VoiceVault desktop application provides a powerful interface for voice recor
 
 1. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 2. Configure environment:
@@ -54,31 +54,31 @@ const appPath = isDev ? process.cwd() : process.resourcesPath;
 
 1. Start development server:
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 2. Start Electron:
 ```bash
-npm run electron:dev
+pnpm run electron:dev
 ```
 
 ### Production
 
 1. Build web assets:
 ```bash
-npm run build
+pnpm run build
 ```
 
 2. Build desktop application:
 ```bash
 # Windows
-npm run electron:build:win
+pnpm run electron:build:win
 
 # macOS
-npm run electron:build:mac
+pnpm run electron:build:mac
 
 # Linux
-npm run electron:build:linux
+pnpm run electron:build:linux
 ```
 
 ## Features
@@ -97,17 +97,17 @@ npm run electron:build:linux
 
 ### Unit Tests
 ```bash
-npm test
+pnpm test
 ```
 
 ### E2E Tests
 ```bash
-npm run e2e
+pnpm run e2e
 ```
 
 ### Performance Testing
 ```bash
-npm run test:performance
+pnpm run test:performance
 ```
 
 ## Troubleshooting
@@ -122,9 +122,9 @@ npm run test:performance
 2. Build errors:
 ```bash
 # Clean build
-npm run clean
+pnpm run clean
 # Rebuild
-npm run build
+pnpm run build
 ```
 
 3. Electron issues:

@@ -37,7 +37,7 @@ const StoragePathSettings: React.FC = () => {
 
   const handleSelectPath = async () => {
     try {
-      const result = await window.electron.selectDirectory();
+      const result = await (window as any).electron?.selectDirectory();
       if (result) {
         setLibraryPath(result);
       }

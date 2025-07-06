@@ -1,11 +1,7 @@
 import axios from 'axios';
 
 // Groq API configuration
-<<<<<<< HEAD
 const GROQ_API_KEY = process.env.REACT_APP_GROQ_API_KEY || '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';
-=======
-const GROQ_API_KEY = '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';
->>>>>>> a1853dfd1097a4a53e26cd4724fea2fe5476425c
 const GROQ_API_URL = 'https://api.groq.com/v1/chat/completions';
 
 // Interface for Groq chat message

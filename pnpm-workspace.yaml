@@ -1,5 +1,6 @@
 packages:
   - 'client'
   - 'server'
+  - 'desktop-client'
+  - 'mobile-client'
   - 'shared'
-  - 'src/components/*'

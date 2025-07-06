@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+// import { Schema } from 'mongoose';
 
 export interface UploadConfig {
   maxFileSize: number; // in bytes
@@ -8,7 +8,7 @@ export interface UploadConfig {
 
 export interface IUploadSettings extends Document {
   maxFileSize: number;
-  lastModifiedBy: Schema.Types.ObjectId;
+  lastModifiedBy: string; // Schema.Types.ObjectId;
   lastModifiedAt: Date;
 }
 

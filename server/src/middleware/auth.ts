@@ -1,14 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from '../types/index';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 
-export interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    role: string;
-  };
-}
+// AuthRequest interface moved to types/index.ts
 
 export interface AuthenticatedRequest extends Request {
   user?: any;
@@ -31,12 +26,12 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     }
 
     req.user = {
-      id: user._id,
+      id: user.id.toString(),
       email: user.email,
-      role: user.role
+      role: user.is_admin ? 'admin' : 'user'
     };
 
-    next();
+    return next();
   } catch (error) {
     return res.status(401).json({ message: 'Invalid token' });
   }
@@ -52,14 +47,14 @@ export const authenticateUser = async (req: AuthenticatedRequest, res: Response,
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
-    const user = await User.findById(decoded._id);
+    const user = await User.findById(decoded.id);
 
     if (!user) {
       return res.status(401).json({ message: 'User not found' });
     }
 
     req.user = user;
-    next();
+    return next();
   } catch (error) {
     return res.status(401).json({ message: 'Invalid token' });
   }

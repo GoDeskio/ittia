@@ -28,7 +28,8 @@ android-setup:
   stage: setup
   image: node:18
   script:
-    - npm install
+    - npm install -g pnpm
+    - pnpm install
     - cd android
     - ./gradlew clean
     - ./gradlew dependencies
@@ -87,7 +88,8 @@ ios-setup:
   stage: setup
   image: node:18
   script:
-    - npm install
+    - npm install -g pnpm
+    - pnpm install
     - cd ios
     - pod install
     - pod repo update

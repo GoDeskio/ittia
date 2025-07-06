@@ -23,7 +23,10 @@ import {
   Visibility as VisibilityIcon,
   Public as PublicIcon,
   Lock as LockIcon,
-  Group as GroupIcon
+  Group as GroupIcon,
+  QrCode as QrCodeIcon,
+  LibraryBooks as LibraryBooksIcon,
+  Share as ShareIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -67,6 +70,8 @@ const Profile: React.FC<{ userId: string }> = ({ userId }) => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [qrCode, setQrCode] = useState<string>('');
+  const [showQrDialog, setShowQrDialog] = useState(false);
 
   useEffect(() => {
     // Fetch profile data
@@ -79,6 +84,18 @@ const Profile: React.FC<{ userId: string }> = ({ userId }) => {
         console.error('Failed to fetch profile:', error);
         setLoading(false);
       });
+
+    // Fetch QR code for voice library if this is the current user or public access
+    if (userId) {
+      axios.get(`/api/settings/validate-token/public-${userId}`)
+        .then(response => {
+          // This would be a public endpoint to get QR code
+          // For now, we'll generate it on the client side
+        })
+        .catch(error => {
+          console.log('QR code not available for this profile');
+        });
+    }
   }, [userId]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -135,17 +152,36 @@ const Profile: React.FC<{ userId: string }> = ({ userId }) => {
                   @{profile.username}
                 </Typography>
               </Grid>
-              {isCurrentUser(userId) && (
-                <Grid item>
+              <Grid item>
+                {isCurrentUser(userId) ? (
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <EnhancedButton
+                      variant="contained"
+                      onClick={() => navigate('/settings')}
+                      sx={{ backgroundColor: displayStyles.buttonColor }}
+                    >
+                      Edit Profile Settings
+                    </EnhancedButton>
+                    <EnhancedButton
+                      variant="outlined"
+                      startIcon={<QrCodeIcon />}
+                      onClick={() => setShowQrDialog(true)}
+                      sx={{ borderColor: displayStyles.buttonColor }}
+                    >
+                      Share Library
+                    </EnhancedButton>
+                  </Box>
+                ) : (
                   <EnhancedButton
                     variant="contained"
-                    onClick={() => navigate('/settings')}
+                    startIcon={<LibraryBooksIcon />}
+                    onClick={() => setShowQrDialog(true)}
                     sx={{ backgroundColor: displayStyles.buttonColor }}
                   >
-                    Edit Profile Settings
+                    Connect to Voice Library
                   </EnhancedButton>
-                </Grid>
-              )}
+                )}
+              </Grid>
             </Grid>
           </div>
         </ProfileSection>
@@ -228,6 +264,62 @@ const Profile: React.FC<{ userId: string }> = ({ userId }) => {
           )}
         </ContentSection>
       </Grid>
+
+      {/* QR Code Dialog */}
+      <Dialog open={showQrDialog} onClose={() => setShowQrDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <QrCodeIcon />
+            {isCurrentUser(userId) ? 'Share Your Voice Library' : `Connect to ${profile?.name}'s Voice Library`}
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ textAlign: 'center', p: 2 }}>
+            {isCurrentUser(userId) ? (
+              <Box>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  Share this QR code to allow others to connect to your voice library.
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<QrCodeIcon />}
+                  onClick={() => {
+                    setShowQrDialog(false);
+                    navigate('/settings');
+                  }}
+                  fullWidth
+                >
+                  View QR Code in Settings
+                </Button>
+              </Box>
+            ) : (
+              <Box>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  Request access to {profile?.name}'s voice library.
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  This will send a connection request that they can approve in their settings.
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<LibraryBooksIcon />}
+                  onClick={() => {
+                    // Handle connection request
+                    console.log('Requesting connection to', userId);
+                    setShowQrDialog(false);
+                  }}
+                  fullWidth
+                >
+                  Request Library Access
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowQrDialog(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 };

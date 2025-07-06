@@ -5,78 +5,117 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const db_1 = require("../db");
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 class User {
     static async findById(id) {
-        const result = await db_1.pool.query('SELECT * FROM users WHERE id = $1', [id]);
-        return result.rows[0] || null;
+        const client = await db_1.pool.connect();
+        try {
+            const result = await client.query('SELECT * FROM users WHERE id = $1', [id]);
+            return result.rows[0] || null;
+        }
+        finally {
+            client.release();
+        }
     }
     static async findByEmail(email) {
-        const result = await db_1.pool.query('SELECT * FROM users WHERE email = $1', [email]);
-        return result.rows[0] || null;
+        const client = await db_1.pool.connect();
+        try {
+            const result = await client.query('SELECT * FROM users WHERE email = $1', [email]);
+            return result.rows[0] || null;
+        }
+        finally {
+            client.release();
+        }
     }
-    static async findOne(query) {
-        const result = await db_1.pool.query('SELECT * FROM users WHERE email = $1', [query.email]);
-        return result.rows[0] || null;
+    static async findOne(criteria) {
+        const client = await db_1.pool.connect();
+        try {
+            if (criteria.email) {
+                const result = await client.query('SELECT * FROM users WHERE email = $1', [criteria.email]);
+                return result.rows[0] || null;
+            }
+            return null;
+        }
+        finally {
+            client.release();
+        }
+    }
+    static async findByApiToken(token) {
+        const client = await db_1.pool.connect();
+        try {
+            const result = await client.query('SELECT * FROM users WHERE api_token = $1', [token]);
+            return result.rows[0] || null;
+        }
+        finally {
+            client.release();
+        }
     }
     static async create(userData) {
-        const password_hash = await bcrypt_1.default.hash(userData.password, 10);
-        const result = await db_1.pool.query('INSERT INTO users (name, email, password_hash, role, settings, storage_quota, storage_used, auth_methods, device_permissions, social_integrations) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *', [
-            userData.name,
-            userData.email,
-            password_hash,
-            userData.role || 'user',
-            { libraryPath: null },
-            { library: 1073741824, cache: 1073741824 },
-            { library: 0, cache: 0 },
-            {
-                password: true,
-                pinCode: false,
-                fingerprint: false,
-                google: false,
-                facebook: false,
-                linkedin: false,
-                instagram: false
-            },
-            {
-                microphone: false,
-                camera: false,
-                location: false,
-                notifications: false
-            },
-            {}
-        ]);
-        return result.rows[0];
+        const client = await db_1.pool.connect();
+        try {
+            const salt = await bcryptjs_1.default.genSalt(10);
+            const password_hash = await bcryptjs_1.default.hash(userData.password, salt);
+            const result = await client.query(`INSERT INTO users (first_name, last_name, email, phone, password_hash, api_token, is_admin, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+         RETURNING *`, [
+                userData.first_name,
+                userData.last_name,
+                userData.email,
+                userData.phone,
+                password_hash,
+                userData.api_token,
+                userData.is_admin || false
+            ]);
+            return result.rows[0];
+        }
+        finally {
+            client.release();
+        }
     }
-    static async update(id, updates) {
-        const setClause = Object.keys(updates)
-            .map((key, index) => `${key} = $${index + 2}`)
-            .join(', ');
-        const values = Object.values(updates);
-        const result = await db_1.pool.query(`UPDATE users SET ${setClause}, updated_at = NOW() WHERE id = $1 RETURNING *`, [id, ...values]);
-        return result.rows[0] || null;
+    static async updateApiToken(id, apiToken) {
+        const client = await db_1.pool.connect();
+        try {
+            const result = await client.query('UPDATE users SET api_token = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *', [apiToken, id]);
+            return result.rows[0] || null;
+        }
+        finally {
+            client.release();
+        }
     }
-    static async updateStorageUsage(id, storageType, size) {
-        const column = `storage_used.${storageType}`;
-        await db_1.pool.query(`UPDATE users SET storage_used = jsonb_set(storage_used, '{${storageType}}', to_jsonb(COALESCE((storage_used->>'${storageType}')::int + $1, 0)), true), updated_at = NOW() WHERE id = $2`, [size, id]);
+    static async validatePassword(user, password) {
+        return bcryptjs_1.default.compare(password, user.password_hash);
     }
-    static async updateStorageQuota(id, storageType, quota) {
-        const column = `storage_quota.${storageType}`;
-        await db_1.pool.query(`UPDATE users SET storage_quota = jsonb_set(storage_quota, '{${storageType}}', to_jsonb($1), true), updated_at = NOW() WHERE id = $2`, [quota, id]);
+    static async updatePassword(id, newPassword) {
+        const client = await db_1.pool.connect();
+        try {
+            const salt = await bcryptjs_1.default.genSalt(10);
+            const password_hash = await bcryptjs_1.default.hash(newPassword, salt);
+            const result = await client.query('UPDATE users SET password_hash = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *', [password_hash, id]);
+            return result.rows[0] || null;
+        }
+        finally {
+            client.release();
+        }
     }
-    static async findAll() {
-        const result = await db_1.pool.query('SELECT * FROM users');
-        return result.rows;
+    static async getAll() {
+        const client = await db_1.pool.connect();
+        try {
+            const result = await client.query('SELECT * FROM users ORDER BY created_at DESC');
+            return result.rows;
+        }
+        finally {
+            client.release();
+        }
     }
-    static async comparePassword(user, candidatePassword) {
-        return bcrypt_1.default.compare(candidatePassword, user.password);
-    }
-    static async findByIdAndUpdate(id, updates, options) {
-        return this.update(id, updates);
-    }
-    static async findByIdAndDelete(id) {
-        const result = await db_1.pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
-        return result.rows[0] || null;
+    static async delete(id) {
+        const client = await db_1.pool.connect();
+        try {
+            const result = await client.query('DELETE FROM users WHERE id = $1', [id]);
+            return result.rowCount > 0;
+        }
+        finally {
+            client.release();
+        }
     }
 }
 exports.User = User;

@@ -18,5 +18,5 @@ export const checkMobilePermissions = (req: Request, res: Response, next: NextFu
   }
   
   // For non-mobile devices or if permissions are granted, proceed
-  next();
+  return next();
 }; 

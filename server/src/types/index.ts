@@ -1,7 +1,6 @@
 import { Request } from 'express';
-import { IUser } from '../models/User';
 
-export interface AuthRequest extends Request {
+export interface AuthRequest extends Omit<Request, 'user'> {
   user?: {
     id: string;
     email: string;

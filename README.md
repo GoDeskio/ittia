@@ -71,7 +71,7 @@ cd VoiceVault
 
 2. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 3. Configure environment variables:
@@ -82,12 +82,12 @@ cp .env.example .env
 
 4. Set up the database:
 ```bash
-npm run db:migrate
+pnpm run db:migrate
 ```
 
 5. Start the server:
 ```bash
-npm start
+pnpm start
 ```
 
 ### Desktop Application
@@ -95,17 +95,17 @@ npm start
 1. Install dependencies:
 ```bash
 cd client
-npm install
+pnpm install
 ```
 
 2. Build the application:
 ```bash
-npm run build
+pnpm run build
 ```
 
 3. Start the application:
 ```bash
-npm start
+pnpm start
 ```
 
 ### Mobile Application
@@ -113,7 +113,7 @@ npm start
 1. Install dependencies:
 ```bash
 cd mobile-client
-npm install
+pnpm install
 ```
 
 2. Configure environment:
@@ -128,10 +128,10 @@ cp .env.example .env
 3. Build the application:
 ```bash
 # For iOS
-npm run build:ios
+pnpm run build:ios
 
 # For Android
-npm run build:android
+pnpm run build:android
 ```
 
 ## Voice Analysis Features

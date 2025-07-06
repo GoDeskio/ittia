@@ -19,11 +19,11 @@ const authenticateToken = async (req, res, next) => {
             return res.status(401).json({ message: 'User not found' });
         }
         req.user = {
-            id: user._id,
+            id: user.id.toString(),
             email: user.email,
-            role: user.role
+            role: user.is_admin ? 'admin' : 'user'
         };
-        next();
+        return next();
     }
     catch (error) {
         return res.status(401).json({ message: 'Invalid token' });
@@ -38,12 +38,12 @@ const authenticateUser = async (req, res, next) => {
             return res.status(401).json({ message: 'No token provided' });
         }
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-        const user = await User_1.User.findById(decoded._id);
+        const user = await User_1.User.findById(decoded.id);
         if (!user) {
             return res.status(401).json({ message: 'User not found' });
         }
         req.user = user;
-        next();
+        return next();
     }
     catch (error) {
         return res.status(401).json({ message: 'Invalid token' });

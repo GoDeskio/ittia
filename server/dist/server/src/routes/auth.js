@@ -9,7 +9,11 @@ const validation_1 = require("../middleware/validation");
 const express_validator_1 = require("express-validator");
 const passport_1 = __importDefault(require("passport"));
 const User_1 = require("../models/User");
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const db_1 = require("../db");
+const qrcode_1 = __importDefault(require("qrcode"));
+const tokenGenerator_1 = require("../utils/tokenGenerator");
 const router = express_1.default.Router();
 const authService = new authService_1.AuthService();
 router.post('/login', async (req, res) => {
@@ -136,29 +140,66 @@ router.post('/logout', passport_1.default.authenticate('jwt', { session: false }
     res.json({ message: 'Logged out successfully' });
 });
 router.post('/register', async (req, res) => {
+    const { email, password, name } = req.body;
     try {
-        const { name, email, password } = req.body;
-        const existingUser = await User_1.User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ error: 'Email already registered' });
+        const userCheck = await db_1.pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        if (userCheck.rows.length > 0) {
+            return res.status(400).json({ error: 'User already exists' });
         }
-        const user = new User_1.User({
-            name,
-            email,
-            password
-        });
-        await user.save();
-        const token = jsonwebtoken_1.default.sign({ _id: user._id }, process.env.JWT_SECRET || 'your-secret-key', { expiresIn: '7d' });
-        res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            profilePicture: user.profilePicture,
-            token
-        });
+        const apiToken = (0, tokenGenerator_1.generateApiToken)();
+        const salt = await bcryptjs_1.default.genSalt(10);
+        const hashedPassword = await bcryptjs_1.default.hash(password, salt);
+        const client = await db_1.pool.connect();
+        try {
+            await client.query('BEGIN');
+            const userResult = await client.query(`INSERT INTO users (email, password, name, api_token)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id, email, name, api_token`, [email, hashedPassword, name, apiToken]);
+            const user = userResult.rows[0];
+            const libraryResult = await client.query(`INSERT INTO voice_libraries (name, owner, api_key, token, is_public)
+         VALUES ($1, $2, $3, $4, true)
+         RETURNING id, name, api_key, token`, [`${name}'s Voice Library`, user.id, apiToken, apiToken]);
+            const library = libraryResult.rows[0];
+            const qrCodeData = {
+                type: 'voicevault_library',
+                libraryId: library.id,
+                apiToken: apiToken,
+                owner: name,
+                timestamp: new Date().toISOString()
+            };
+            const qrCode = await qrcode_1.default.toDataURL(JSON.stringify(qrCodeData), {
+                errorCorrectionLevel: 'H',
+                margin: 1,
+                width: 400
+            });
+            const token = jsonwebtoken_1.default.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || 'your-secret-key', { expiresIn: '24h' });
+            await client.query('COMMIT');
+            res.status(201).json({
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name
+                },
+                token,
+                library: {
+                    id: library.id,
+                    name: library.name,
+                    apiToken: library.api_key
+                },
+                qrCode
+            });
+        }
+        catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        }
+        finally {
+            client.release();
+        }
     }
     catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        console.error('Error in registration:', error);
+        res.status(500).json({ error: 'Failed to register user' });
     }
 });
 exports.default = router;

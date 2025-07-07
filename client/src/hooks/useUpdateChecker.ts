@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { UpdateService, UpdateCheckResult } from '../../../shared/updateService';
+import { UpdateService, UpdateCheckResult } from '../services/updateService';
 
 class WebUpdateService extends UpdateService {
   public getCurrentVersion(): string {

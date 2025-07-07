@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { AuthService } from '../services/authService';
 import { validateRequest } from '../middleware/validation';
-import { body } from 'express-validator';
+import { body, validationResult } from 'express-validator';
 import passport from 'passport';
 import { User } from '../models/User';
 import { authConfig } from '../config/auth.config';

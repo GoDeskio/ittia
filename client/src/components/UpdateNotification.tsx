@@ -21,7 +21,7 @@ import {
   CheckCircle as CheckCircleIcon,
   Refresh as RefreshIcon
 } from '@mui/icons-material';
-import { UpdateService, UpdateCheckResult } from '../../../shared/updateService';
+import { UpdateService, UpdateCheckResult } from '../services/updateService';
 
 interface UpdateNotificationProps {
   autoCheck?: boolean;

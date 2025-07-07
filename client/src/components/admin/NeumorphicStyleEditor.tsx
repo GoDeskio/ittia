@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import {
   Box,
@@ -29,7 +30,7 @@ import {
   Add as AddIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material';
-import { ChromePicker } from 'react-color';
+// import { ChromePicker } from 'react-color'; // Temporarily disabled
 import { useTheme } from '../../contexts/ThemeContext';
 import { StyledCard } from '../shared/StyledComponents';
 import NeumorphicIcon from '../shared/NeumorphicIcon';
@@ -414,10 +415,11 @@ const NeumorphicStyleEditor: React.FC = () => {
             borderRadius: 2,
           }}
         >
-          <ChromePicker
+          {/* <ChromePicker
             color={colors[colorPicker.type as keyof typeof colors]}
             onChange={(color) => handleColorChange(color, colorPicker.type as 'primaryColor' | 'secondaryColor' | 'background')}
-          />
+          /> */}
+          <Typography>Color picker temporarily disabled</Typography>
           <Button
             fullWidth
             variant="contained"

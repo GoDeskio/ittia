@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { useTheme } from './contexts/ThemeContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Registration from './pages/Registration';
@@ -13,7 +13,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import { ErrorReportDialog } from './components/ErrorReportDialog';
 import { ErrorLogDashboard } from './components/ErrorLogDashboard';
 import Messages from './pages/Messages';
-import theme from './theme';
 import AboutPage from './pages/AboutPage';
 import SettingsPage from './pages/SettingsPage';
 import Layout from './components/Layout';
@@ -60,7 +59,6 @@ class ErrorBoundary extends React.Component<
 }
 
 const AppContent: React.FC = () => {
-  const { colors } = useTheme();
   const { user } = useAuth();
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
 
@@ -83,7 +81,7 @@ const AppContent: React.FC = () => {
   }, []);
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <CssBaseline />
       <ErrorBoundary>
         <Router>
@@ -168,14 +166,16 @@ const AppContent: React.FC = () => {
           </div>
         </Router>
       </ErrorBoundary>
-    </ThemeProvider>
+    </>
   );
 };
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <AppContent />
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </AuthProvider>
   );
 };

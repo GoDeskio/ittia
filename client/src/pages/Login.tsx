@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, styled } from '@mui/material';
 import { Login as LoginIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import {
   NeumorphicCard,
   NeumorphicButton,
@@ -26,11 +27,12 @@ const StyledForm = styled(Box)(({ theme }) => ({
 }));
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login, error: authError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,11 +40,10 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      // TODO: Implement login API call
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulated API call
+      await login(email, password);
       navigate('/dashboard');
     } catch (error) {
-      setError('Invalid username or password');
+      setError(authError || 'Invalid email or password');
     } finally {
       setIsSubmitting(false);
     }
@@ -66,9 +67,10 @@ const Login: React.FC = () => {
 
           <NeumorphicInput
             fullWidth
-            label="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
 

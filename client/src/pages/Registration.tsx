@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Typography, styled, Grid } from '@mui/material';
+import { Box, Typography, styled } from '@mui/material';
 import { PersonAdd as PersonAddIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import {
   NeumorphicCard,
   NeumorphicButton,
@@ -30,66 +31,35 @@ const RequiredLabel = styled('span')(({ theme }) => ({
   marginLeft: '4px',
 }));
 
-interface RegistrationForm {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
-}
-
 const Registration: React.FC = () => {
-  const [formData, setFormData] = useState<RegistrationForm>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    address: {
-      street: '',
-      city: '',
-      state: '',
-      zipCode: '',
-    },
-  });
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-
-  const handleChange = (field: string, value: string) => {
-    if (field.startsWith('address.')) {
-      const addressField = field.split('.')[1];
-      setFormData((prev) => ({
-        ...prev,
-        address: {
-          ...prev.address,
-          [addressField]: value,
-        },
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    }
-  };
+  const { register, error: authError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError('');
     setMessage('');
 
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      // TODO: Implement API call to register user
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulated API call
+      await register(username, email, password);
       setMessage('Registration successful! You can now login.');
       setTimeout(() => navigate('/login'), 2000);
     } catch (error) {
-      setMessage('An error occurred during registration. Please try again.');
+      setError(authError || 'An error occurred during registration. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -111,86 +81,40 @@ const Registration: React.FC = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={3}>
-            {/* Required Fields */}
-            <Grid item xs={12} sm={6}>
-              <NeumorphicInput
-                fullWidth
-                label={<>First Name<RequiredLabel>*</RequiredLabel></>}
-                value={formData.firstName}
-                onChange={(e) => handleChange('firstName', e.target.value)}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <NeumorphicInput
-                fullWidth
-                label={<>Last Name<RequiredLabel>*</RequiredLabel></>}
-                value={formData.lastName}
-                onChange={(e) => handleChange('lastName', e.target.value)}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <NeumorphicInput
-                fullWidth
-                label={<>Email<RequiredLabel>*</RequiredLabel></>}
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <NeumorphicInput
-                fullWidth
-                label={<>Phone Number<RequiredLabel>*</RequiredLabel></>}
-                type="tel"
-                value={formData.phoneNumber}
-                onChange={(e) => handleChange('phoneNumber', e.target.value)}
-                required
-              />
-            </Grid>
+          <NeumorphicInput
+            fullWidth
+            label={<>Username<RequiredLabel>*</RequiredLabel></>}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
 
-            {/* Optional Address Fields */}
-            <Grid item xs={12}>
-              <Typography variant="subtitle1" sx={{ mb: 2 }}>
-                Home Address (Optional)
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <NeumorphicInput
-                fullWidth
-                label="Street Address"
-                value={formData.address.street}
-                onChange={(e) => handleChange('address.street', e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <NeumorphicInput
-                fullWidth
-                label="City"
-                value={formData.address.city}
-                onChange={(e) => handleChange('address.city', e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <NeumorphicInput
-                fullWidth
-                label="State"
-                value={formData.address.state}
-                onChange={(e) => handleChange('address.state', e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <NeumorphicInput
-                fullWidth
-                label="ZIP Code"
-                value={formData.address.zipCode}
-                onChange={(e) => handleChange('address.zipCode', e.target.value)}
-              />
-            </Grid>
-          </Grid>
+          <NeumorphicInput
+            fullWidth
+            label={<>Email<RequiredLabel>*</RequiredLabel></>}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <NeumorphicInput
+            fullWidth
+            label={<>Password<RequiredLabel>*</RequiredLabel></>}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <NeumorphicInput
+            fullWidth
+            label={<>Confirm Password<RequiredLabel>*</RequiredLabel></>}
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
 
           <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
             <NeumorphicButton
@@ -209,9 +133,19 @@ const Registration: React.FC = () => {
             </NeumorphicButton>
           </Box>
 
+          {error && (
+            <Typography
+              color="error"
+              textAlign="center"
+              variant="body2"
+            >
+              {error}
+            </Typography>
+          )}
+
           {message && (
             <Typography
-              color={message.includes('error') ? 'error' : 'success'}
+              color="success"
               textAlign="center"
               variant="body2"
             >

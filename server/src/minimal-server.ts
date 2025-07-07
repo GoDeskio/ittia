@@ -197,6 +197,112 @@ app.get('/api/settings/validate-token/:token', async (req, res) => {
   }
 });
 
+// Basic authentication endpoints for testing
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // For testing purposes, accept any email/password combination
+    // In a real app, you would verify against the database
+    const mockUser = {
+      id: 1,
+      _id: '1',
+      name: 'Test User',
+      username: 'testuser',
+      email: email,
+      role: 'user',
+      token: 'mock-jwt-token',
+      messageRetentionPeriod: '7d',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    res.json({
+      token: 'mock-jwt-token',
+      user: mockUser
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'Username, email and password are required' });
+    }
+
+    // For testing purposes, accept any registration
+    const mockUser = {
+      id: 2,
+      _id: '2',
+      name: username,
+      username: username,
+      email: email,
+      role: 'user',
+      token: 'mock-jwt-token-register',
+      messageRetentionPeriod: '7d',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    res.json({
+      token: 'mock-jwt-token-register',
+      user: mockUser,
+      apiToken: 'mock-api-token-' + Date.now()
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
+app.get('/api/auth/me', (req, res) => {
+  // For testing purposes, return a mock user
+  const mockUser = {
+    id: 1,
+    _id: '1',
+    name: 'Test User',
+    username: 'testuser',
+    email: 'test@example.com',
+    role: 'user',
+    token: 'mock-jwt-token',
+    messageRetentionPeriod: '7d',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  res.json(mockUser);
+});
+
+// Version check endpoint for update notifications
+app.get('/api/version/check', (req, res) => {
+  const { currentVersion, platform } = req.query;
+  
+  // Mock version response for testing
+  const mockVersionInfo = {
+    version: '1.0.1',
+    releaseDate: new Date().toISOString(),
+    releaseNotes: [
+      'Bug fixes and performance improvements',
+      'Enhanced security features',
+      'UI/UX improvements'
+    ],
+    critical: false,
+    platform: platform || 'web'
+  };
+
+  // For testing, always return no update available
+  res.json(mockVersionInfo);
+});
+
 // Health check
 app.get('/health', (_req, res) => {
   res.json({ status: 'OK', message: 'API Token Server is running' });

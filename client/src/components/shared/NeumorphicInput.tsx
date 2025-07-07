@@ -1,6 +1,5 @@
 import React from 'react';
 import { TextField, TextFieldProps as MuiTextFieldProps, styled } from '@mui/material';
-import { useTheme } from '../../contexts/ThemeContext';
 
 type TextFieldProps = Omit<MuiTextFieldProps, 'variant'>;
 
@@ -9,32 +8,17 @@ interface NeumorphicInputProps extends TextFieldProps {
 }
 
 const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ...props }) => {
-  // Use fallback values if theme context is not available
-  const themeContext = useTheme();
-  const neumorphicSettings = themeContext?.neumorphicSettings || {
-    shadowDistance: 8,
-    shadowBlur: 16,
-    darkShadowOpacity: 0.6,
-    lightShadowOpacity: 0.5,
-    borderRadius: 12,
-  };
-  const colors = themeContext?.colors || {
-    background: '#e0e5ec',
-    text: '#4a4a4a',
-    primaryColor: '#d1d9e6',
-  };
-  const animationSettings = themeContext?.animationSettings || {
-    transitionDuration: 300,
-    transitionEasing: 'ease',
-  };
-
-  const {
-    shadowDistance,
-    shadowBlur,
-    darkShadowOpacity,
-    lightShadowOpacity,
-    borderRadius,
-  } = neumorphicSettings;
+  // Use simple hardcoded values to ensure functionality
+  const shadowDistance = 8;
+  const shadowBlur = 16;
+  const darkShadowOpacity = 0.6;
+  const lightShadowOpacity = 0.5;
+  const borderRadius = 12;
+  const backgroundColor = '#e0e5ec';
+  const textColor = '#4a4a4a';
+  const primaryColor = '#6a6a6a';
+  const transitionDuration = 300;
+  const transitionEasing = 'ease';
 
   const getInputShadow = () => {
     const darkShadow = `rgba(163,177,198,${darkShadowOpacity})`;
@@ -47,10 +31,10 @@ const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ..
 
   const StyledTextField = styled(TextField)(({ theme }) => ({
     '& .MuiOutlinedInput-root': {
-      backgroundColor: colors.background,
+      backgroundColor: backgroundColor,
       borderRadius: borderRadius,
       border: 'none',
-      transition: `all ${animationSettings.transitionDuration}ms ${animationSettings.transitionEasing}`,
+      transition: `all ${transitionDuration}ms ${transitionEasing}`,
       boxShadow: getInputShadow(),
       position: 'relative',
       zIndex: 1,
@@ -65,15 +49,15 @@ const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ..
         border: 'none',
       },
       '&:hover': {
-        backgroundColor: colors.background,
+        backgroundColor: backgroundColor,
       },
       '&.Mui-focused': {
-        backgroundColor: colors.background,
+        backgroundColor: backgroundColor,
         boxShadow: getInputShadow(),
       },
     },
     '& .MuiOutlinedInput-input': {
-      color: colors.text,
+      color: textColor,
       padding: '12px 16px',
       fontSize: '16px',
       backgroundColor: 'transparent',
@@ -84,7 +68,7 @@ const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ..
       pointerEvents: 'auto',
       cursor: 'text',
       '&::placeholder': {
-        color: colors.text,
+        color: textColor,
         opacity: 0.7,
       },
       '&:focus': {
@@ -96,9 +80,9 @@ const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ..
       },
     },
     '& .MuiInputLabel-root': {
-      color: colors.text,
+      color: textColor,
       '&.Mui-focused': {
-        color: colors.primaryColor,
+        color: primaryColor,
       },
     },
     '& .Mui-disabled': {

@@ -74,20 +74,30 @@ export const EnhancedTextField = styled(TextField)(({ theme }) => ({
     },
   },
   
-  // Ensure input functionality
+  // Ensure input functionality and keyboard input
   '& .MuiOutlinedInput-input': {
-    color: '#4a4a4a',
+    color: '#4a4a4a !important',
     padding: '12px 16px',
     fontSize: '16px',
-    backgroundColor: 'transparent',
-    border: 'none',
-    outline: 'none',
-    cursor: 'text',
-    userSelect: 'text',
+    backgroundColor: 'transparent !important',
+    border: 'none !important',
+    outline: 'none !important',
+    
+    // Critical: Ensure keyboard input works
+    cursor: 'text !important',
+    userSelect: 'text !important',
+    pointerEvents: 'auto !important',
     
     '&:focus': {
-      outline: 'none',
-      border: 'none',
+      outline: 'none !important',
+      border: 'none !important',
+      backgroundColor: 'transparent !important',
+    },
+    
+    // Ensure text input is not blocked
+    '&:not(:disabled)': {
+      cursor: 'text !important',
+      pointerEvents: 'auto !important',
     },
     
     '&::placeholder': {
@@ -127,21 +137,31 @@ export const CommentBox = styled(TextField)(({ theme }) => ({
     },
   },
   
-  // Ensure textarea functionality for multiline
+  // Ensure textarea functionality for multiline and keyboard input
   '& .MuiOutlinedInput-input': {
-    color: '#4a4a4a',
+    color: '#4a4a4a !important',
     padding: '12px 16px',
     fontSize: '16px',
-    backgroundColor: 'transparent',
-    border: 'none',
-    outline: 'none',
-    cursor: 'text',
-    userSelect: 'text',
+    backgroundColor: 'transparent !important',
+    border: 'none !important',
+    outline: 'none !important',
     resize: 'vertical',
     
+    // Critical: Ensure keyboard input works for textarea
+    cursor: 'text !important',
+    userSelect: 'text !important',
+    pointerEvents: 'auto !important',
+    
     '&:focus': {
-      outline: 'none',
-      border: 'none',
+      outline: 'none !important',
+      border: 'none !important',
+      backgroundColor: 'transparent !important',
+    },
+    
+    // Ensure text input is not blocked
+    '&:not(:disabled)': {
+      cursor: 'text !important',
+      pointerEvents: 'auto !important',
     },
     
     '&::placeholder': {

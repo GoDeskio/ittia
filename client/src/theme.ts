@@ -163,7 +163,7 @@ const theme = createTheme({
             },
           },
           
-          // Ensure all input elements work
+          // Ensure all input elements work and accept keyboard input
           '& input': {
             color: '#4a4a4a !important',
             padding: '12px 16px',
@@ -175,16 +175,37 @@ const theme = createTheme({
             border: 'none !important',
             outline: 'none !important',
             
+            // Critical: Ensure keyboard input works
             cursor: 'text !important',
             userSelect: 'text !important',
             pointerEvents: 'auto !important',
             
+            // Ensure input can receive keyboard events
             '&:focus': {
               outline: 'none !important',
               border: 'none !important',
               backgroundColor: 'transparent !important',
             },
             
+            // Ensure text input is not blocked
+            '&:not(:disabled)': {
+              cursor: 'text !important',
+              pointerEvents: 'auto !important',
+            },
+            
+            // Cross-browser placeholder support
+            '&::-webkit-input-placeholder': {
+              color: '#4a4a4a',
+              opacity: 0.7,
+            },
+            '&::-moz-placeholder': {
+              color: '#4a4a4a',
+              opacity: 0.7,
+            },
+            '&:-ms-input-placeholder': {
+              color: '#4a4a4a',
+              opacity: 0.7,
+            },
             '&::placeholder': {
               color: '#4a4a4a',
               opacity: 0.7,
@@ -218,7 +239,7 @@ const theme = createTheme({
             },
           },
           
-          // Critical: Ensure input element is fully functional
+          // Critical: Ensure input element is fully functional and accepts keyboard input
           '& .MuiOutlinedInput-input': {
             color: '#4a4a4a !important',
             padding: '12px 16px',
@@ -226,22 +247,42 @@ const theme = createTheme({
             fontFamily: 'inherit',
             fontWeight: 'normal',
             
-            // Ensure input is editable
+            // Ensure input is editable and accepts keyboard input
             backgroundColor: 'transparent !important',
             border: 'none !important',
             outline: 'none !important',
             
-            // Make sure input can receive focus and text
+            // Critical: Make sure input can receive focus and keyboard input
             cursor: 'text !important',
             userSelect: 'text !important',
             pointerEvents: 'auto !important',
             
+            // Ensure keyboard events are captured
             '&:focus': {
               outline: 'none !important',
               border: 'none !important',
               backgroundColor: 'transparent !important',
             },
             
+            // Ensure text input works
+            '&:not(:disabled)': {
+              cursor: 'text !important',
+              pointerEvents: 'auto !important',
+            },
+            
+            // Remove any potential input blocking
+            '&::-webkit-input-placeholder': {
+              color: '#4a4a4a',
+              opacity: 0.7,
+            },
+            '&::-moz-placeholder': {
+              color: '#4a4a4a',
+              opacity: 0.7,
+            },
+            '&:-ms-input-placeholder': {
+              color: '#4a4a4a',
+              opacity: 0.7,
+            },
             '&::placeholder': {
               color: '#4a4a4a',
               opacity: 0.7,

@@ -1,5 +1,11 @@
-import React from 'react';
-import { TextField, TextFieldProps as MuiTextFieldProps } from '@mui/material';
+import React, { useState } from 'react';
+import { 
+  TextField, 
+  TextFieldProps as MuiTextFieldProps, 
+  InputAdornment, 
+  IconButton 
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 type TextFieldProps = Omit<MuiTextFieldProps, 'variant'>;
 
@@ -7,10 +13,53 @@ interface NeumorphicInputProps extends TextFieldProps {
   isFocused?: boolean;
 }
 
-const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ...props }) => {
+const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ 
+  isFocused = false, 
+  type,
+  ...props 
+}) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPasswordField = type === 'password';
+  
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+  // Determine the actual input type
+  const inputType = isPasswordField ? (showPassword ? 'text' : 'password') : type;
+
+  // Create InputProps with password reveal functionality
+  const inputProps = isPasswordField ? {
+    ...props.InputProps,
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton
+          aria-label="toggle password visibility"
+          onClick={handleClickShowPassword}
+          onMouseDown={handleMouseDownPassword}
+          edge="end"
+          sx={{
+            color: '#6a6a6a',
+            '&:hover': {
+              backgroundColor: 'rgba(106, 106, 106, 0.1)',
+            },
+          }}
+        >
+          {showPassword ? <VisibilityOff /> : <Visibility />}
+        </IconButton>
+      </InputAdornment>
+    ),
+  } : props.InputProps;
+
   return (
     <TextField
       {...props}
+      type={inputType}
+      InputProps={inputProps}
       variant="outlined"
       sx={{
         // Root container styling
@@ -40,24 +89,33 @@ const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ..
         
         // Critical: Input element must be fully functional
         '& .MuiOutlinedInput-input': {
-          color: '#4a4a4a',
+          color: '#4a4a4a !important',
           padding: '12px 16px',
           fontSize: '16px',
           fontFamily: 'inherit',
           fontWeight: 'normal',
           
-          // Ensure input is editable
-          backgroundColor: 'transparent',
-          border: 'none',
-          outline: 'none',
+          // Ensure input is editable and accepts keyboard input
+          backgroundColor: 'transparent !important',
+          border: 'none !important',
+          outline: 'none !important',
           
-          // Make sure input can receive focus and text
-          cursor: 'text',
-          userSelect: 'text',
+          // Critical: Make sure input can receive focus and keyboard input
+          cursor: 'text !important',
+          userSelect: 'text !important',
+          pointerEvents: 'auto !important',
           
+          // Ensure keyboard events work
           '&:focus': {
-            outline: 'none',
-            border: 'none',
+            outline: 'none !important',
+            border: 'none !important',
+            backgroundColor: 'transparent !important',
+          },
+          
+          // Ensure text can be typed
+          '&:not(:disabled)': {
+            cursor: 'text !important',
+            pointerEvents: 'auto !important',
           },
           
           '&::placeholder': {
@@ -68,6 +126,18 @@ const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ..
           '&:disabled': {
             cursor: 'not-allowed',
             opacity: 0.6,
+          },
+        },
+        
+        // Ensure input adornments (like password reveal) work properly
+        '& .MuiInputAdornment-root': {
+          color: '#6a6a6a',
+          '& .MuiIconButton-root': {
+            color: '#6a6a6a',
+            padding: '8px',
+            '&:hover': {
+              backgroundColor: 'rgba(106, 106, 106, 0.1)',
+            },
           },
         },
         

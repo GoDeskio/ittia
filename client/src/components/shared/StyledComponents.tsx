@@ -55,17 +55,51 @@ export const VisibleTableContainer = styled(TableContainer)(({ theme }) => ({
 // Search and input fields with neumorphic inset effect
 export const EnhancedTextField = styled(TextField)(({ theme }) => ({
   '& .MuiOutlinedInput-root': {
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: '#e0e5ec',
     borderRadius: '12px',
-    boxShadow: 'inset 6px 6px 10px rgb(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255, 0.5)',
+    boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
+    border: 'none',
+    transition: 'all 0.3s ease',
+    
     '& fieldset': {
-      border: 'none',
+      display: 'none', // Remove fieldset completely
     },
+    
     '&:hover': {
-      backgroundColor: theme.palette.background.dark,
+      backgroundColor: '#e0e5ec',
     },
     '&.Mui-focused': {
-      boxShadow: 'inset 4px 4px 8px rgb(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255, 0.5)',
+      backgroundColor: '#e0e5ec',
+      boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
+    },
+  },
+  
+  // Ensure input functionality
+  '& .MuiOutlinedInput-input': {
+    color: '#4a4a4a',
+    padding: '12px 16px',
+    fontSize: '16px',
+    backgroundColor: 'transparent',
+    border: 'none',
+    outline: 'none',
+    cursor: 'text',
+    userSelect: 'text',
+    
+    '&:focus': {
+      outline: 'none',
+      border: 'none',
+    },
+    
+    '&::placeholder': {
+      color: '#4a4a4a',
+      opacity: 0.7,
+    },
+  },
+  
+  '& .MuiInputLabel-root': {
+    color: '#4a4a4a',
+    '&.Mui-focused': {
+      color: '#6a6a6a',
     },
   },
 }));
@@ -73,12 +107,53 @@ export const EnhancedTextField = styled(TextField)(({ theme }) => ({
 // Comment box with neumorphic inset effect
 export const CommentBox = styled(TextField)(({ theme }) => ({
   '& .MuiOutlinedInput-root': {
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: '#e0e5ec',
     borderRadius: '12px',
-    boxShadow: 'inset 6px 6px 10px rgb(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255, 0.5)',
+    boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
     minHeight: '80px',
+    border: 'none',
+    transition: 'all 0.3s ease',
+    
     '& fieldset': {
+      display: 'none', // Remove fieldset completely
+    },
+    
+    '&:hover': {
+      backgroundColor: '#e0e5ec',
+    },
+    '&.Mui-focused': {
+      backgroundColor: '#e0e5ec',
+      boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
+    },
+  },
+  
+  // Ensure textarea functionality for multiline
+  '& .MuiOutlinedInput-input': {
+    color: '#4a4a4a',
+    padding: '12px 16px',
+    fontSize: '16px',
+    backgroundColor: 'transparent',
+    border: 'none',
+    outline: 'none',
+    cursor: 'text',
+    userSelect: 'text',
+    resize: 'vertical',
+    
+    '&:focus': {
+      outline: 'none',
       border: 'none',
+    },
+    
+    '&::placeholder': {
+      color: '#4a4a4a',
+      opacity: 0.7,
+    },
+  },
+  
+  '& .MuiInputLabel-root': {
+    color: '#4a4a4a',
+    '&.Mui-focused': {
+      color: '#6a6a6a',
     },
   },
 }));

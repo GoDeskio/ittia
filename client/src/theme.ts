@@ -146,25 +146,48 @@ const theme = createTheme({
           '&.MuiOutlinedInput-root': {
             backgroundColor: '#e0e5ec',
             borderRadius: '12px',
-            boxShadow: 'inset 6px 6px 10px rgb(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255, 0.5)',
+            boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
+            border: 'none',
+            transition: 'all 0.3s ease',
+            
             '& fieldset': {
-              border: 'none',
+              display: 'none', // Completely remove fieldset
             },
-            '&:hover fieldset': {
-              border: 'none',
+            
+            '&:hover': {
+              backgroundColor: '#e0e5ec',
             },
-            '&.Mui-focused fieldset': {
-              border: 'none',
+            '&.Mui-focused': {
+              backgroundColor: '#e0e5ec',
+              boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
             },
           },
+          
+          // Ensure all input elements work
           '& input': {
-            color: '#4a4a4a',
-            backgroundColor: 'transparent',
-            border: 'none',
-            outline: 'none',
+            color: '#4a4a4a !important',
+            padding: '12px 16px',
+            fontSize: '16px',
+            fontFamily: 'inherit',
+            fontWeight: 'normal',
+            
+            backgroundColor: 'transparent !important',
+            border: 'none !important',
+            outline: 'none !important',
+            
+            cursor: 'text !important',
+            userSelect: 'text !important',
+            pointerEvents: 'auto !important',
+            
             '&:focus': {
-              outline: 'none',
-              border: 'none',
+              outline: 'none !important',
+              border: 'none !important',
+              backgroundColor: 'transparent !important',
+            },
+            
+            '&::placeholder': {
+              color: '#4a4a4a',
+              opacity: 0.7,
             },
           },
         },
@@ -173,28 +196,68 @@ const theme = createTheme({
     MuiTextField: {
       styleOverrides: {
         root: {
+          // Ensure all TextFields work properly
           '& .MuiOutlinedInput-root': {
             backgroundColor: '#e0e5ec',
             borderRadius: '12px',
-            boxShadow: 'inset 6px 6px 10px rgb(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255, 0.5)',
+            boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
+            border: 'none',
+            transition: 'all 0.3s ease',
+            
+            // Remove fieldset completely to prevent interference
             '& fieldset': {
-              border: 'none',
+              display: 'none',
             },
-            '&:hover fieldset': {
-              border: 'none',
+            
+            '&:hover': {
+              backgroundColor: '#e0e5ec',
             },
-            '&.Mui-focused fieldset': {
-              border: 'none',
+            '&.Mui-focused': {
+              backgroundColor: '#e0e5ec',
+              boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
             },
           },
+          
+          // Critical: Ensure input element is fully functional
           '& .MuiOutlinedInput-input': {
-            color: '#4a4a4a',
-            backgroundColor: 'transparent',
-            border: 'none',
-            outline: 'none',
+            color: '#4a4a4a !important',
+            padding: '12px 16px',
+            fontSize: '16px',
+            fontFamily: 'inherit',
+            fontWeight: 'normal',
+            
+            // Ensure input is editable
+            backgroundColor: 'transparent !important',
+            border: 'none !important',
+            outline: 'none !important',
+            
+            // Make sure input can receive focus and text
+            cursor: 'text !important',
+            userSelect: 'text !important',
+            pointerEvents: 'auto !important',
+            
             '&:focus': {
-              outline: 'none',
-              border: 'none',
+              outline: 'none !important',
+              border: 'none !important',
+              backgroundColor: 'transparent !important',
+            },
+            
+            '&::placeholder': {
+              color: '#4a4a4a',
+              opacity: 0.7,
+            },
+            
+            '&:disabled': {
+              cursor: 'not-allowed',
+              opacity: 0.6,
+            },
+          },
+          
+          // Label styling
+          '& .MuiInputLabel-root': {
+            color: '#4a4a4a',
+            '&.Mui-focused': {
+              color: '#6a6a6a',
             },
           },
         },

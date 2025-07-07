@@ -58,15 +58,23 @@ const theme = createTheme({
         root: {
           textTransform: 'none',
           backgroundColor: '#e0e5ec',
+          color: '#4a4a4a', // Dark grey text color
           boxShadow: '9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5)',
           borderRadius: '12px',
-          padding: '10px 20px',
+          padding: '8px 16px', // Reduced padding for smaller buttons
+          fontSize: '0.875rem', // Slightly smaller font
+          fontWeight: 500,
           '&:hover': {
             backgroundColor: '#d1d9e6',
+            color: '#3a3a3a', // Slightly darker on hover
             boxShadow: '6px 6px 10px rgb(163,177,198,0.6), -6px -6px 10px rgba(255,255,255, 0.5)',
           },
           '&:active': {
+            color: '#2a2a2a', // Even darker when pressed
             boxShadow: 'inset 6px 6px 10px rgb(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255, 0.5)',
+          },
+          '&.Mui-disabled': {
+            color: '#8a8a8a', // Lighter grey when disabled
           },
         },
       },
@@ -149,6 +157,16 @@ const theme = createTheme({
               border: 'none',
             },
           },
+          '& input': {
+            color: '#4a4a4a',
+            backgroundColor: 'transparent',
+            border: 'none',
+            outline: 'none',
+            '&:focus': {
+              outline: 'none',
+              border: 'none',
+            },
+          },
         },
       },
     },
@@ -160,6 +178,22 @@ const theme = createTheme({
             borderRadius: '12px',
             boxShadow: 'inset 6px 6px 10px rgb(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255, 0.5)',
             '& fieldset': {
+              border: 'none',
+            },
+            '&:hover fieldset': {
+              border: 'none',
+            },
+            '&.Mui-focused fieldset': {
+              border: 'none',
+            },
+          },
+          '& .MuiOutlinedInput-input': {
+            color: '#4a4a4a',
+            backgroundColor: 'transparent',
+            border: 'none',
+            outline: 'none',
+            '&:focus': {
+              outline: 'none',
               border: 'none',
             },
           },

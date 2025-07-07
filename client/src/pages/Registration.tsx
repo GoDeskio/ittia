@@ -116,18 +116,19 @@ const Registration: React.FC = () => {
             required
           />
 
-          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, mt: 2, justifyContent: 'center', alignItems: 'center' }}>
             <NeumorphicButton
-              fullWidth
               variant="convex"
               type="submit"
               disabled={isSubmitting}
+              sx={{ minWidth: '140px', maxWidth: '170px' }}
             >
               {isSubmitting ? 'Creating Account...' : 'Create Account'}
             </NeumorphicButton>
             <NeumorphicButton
               variant="flat"
               onClick={() => navigate('/login')}
+              sx={{ minWidth: '120px', maxWidth: '150px' }}
             >
               Back to Login
             </NeumorphicButton>

@@ -9,7 +9,25 @@ interface NeumorphicInputProps extends TextFieldProps {
 }
 
 const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ...props }) => {
-  const { neumorphicSettings, colors, animationSettings } = useTheme();
+  // Use fallback values if theme context is not available
+  const themeContext = useTheme();
+  const neumorphicSettings = themeContext?.neumorphicSettings || {
+    shadowDistance: 8,
+    shadowBlur: 16,
+    darkShadowOpacity: 0.6,
+    lightShadowOpacity: 0.5,
+    borderRadius: 12,
+  };
+  const colors = themeContext?.colors || {
+    background: '#e0e5ec',
+    text: '#4a4a4a',
+    primaryColor: '#d1d9e6',
+  };
+  const animationSettings = themeContext?.animationSettings || {
+    transitionDuration: 300,
+    transitionEasing: 'ease',
+  };
+
   const {
     shadowDistance,
     shadowBlur,
@@ -24,11 +42,7 @@ const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ..
     const distance = Math.max(shadowDistance / 2, 3);
     const blur = Math.max(shadowBlur / 2, 4);
 
-    return isFocused
-      ? `inset ${distance}px ${distance}px ${blur}px ${darkShadow}, 
-         inset -${distance}px -${distance}px ${blur}px ${lightShadow}`
-      : `inset ${distance}px ${distance}px ${blur}px ${darkShadow}, 
-         inset -${distance}px -${distance}px ${blur}px ${lightShadow}`;
+    return `inset ${distance}px ${distance}px ${blur}px ${darkShadow}, inset -${distance}px -${distance}px ${blur}px ${lightShadow}`;
   };
 
   const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -38,7 +52,16 @@ const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ..
       border: 'none',
       transition: `all ${animationSettings.transitionDuration}ms ${animationSettings.transitionEasing}`,
       boxShadow: getInputShadow(),
+      position: 'relative',
+      zIndex: 1,
+      pointerEvents: 'auto',
       '& fieldset': {
+        border: 'none',
+      },
+      '&:hover fieldset': {
+        border: 'none',
+      },
+      '&.Mui-focused fieldset': {
         border: 'none',
       },
       '&:hover': {
@@ -52,6 +75,25 @@ const NeumorphicInput: React.FC<NeumorphicInputProps> = ({ isFocused = false, ..
     '& .MuiOutlinedInput-input': {
       color: colors.text,
       padding: '12px 16px',
+      fontSize: '16px',
+      backgroundColor: 'transparent',
+      border: 'none',
+      outline: 'none',
+      position: 'relative',
+      zIndex: 2,
+      pointerEvents: 'auto',
+      cursor: 'text',
+      '&::placeholder': {
+        color: colors.text,
+        opacity: 0.7,
+      },
+      '&:focus': {
+        outline: 'none',
+        border: 'none',
+      },
+      '&:disabled': {
+        cursor: 'not-allowed',
+      },
     },
     '& .MuiInputLabel-root': {
       color: colors.text,

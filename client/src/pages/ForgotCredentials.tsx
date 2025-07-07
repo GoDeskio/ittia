@@ -72,18 +72,19 @@ const ForgotCredentials: React.FC = () => {
             required
           />
 
-          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, mt: 2, justifyContent: 'center', alignItems: 'center' }}>
             <NeumorphicButton
-              fullWidth
               variant="convex"
               type="submit"
               disabled={isSubmitting}
+              sx={{ minWidth: '140px', maxWidth: '170px' }}
             >
               {isSubmitting ? 'Sending...' : 'Send Credentials'}
             </NeumorphicButton>
             <NeumorphicButton
               variant="flat"
               onClick={() => navigate('/login')}
+              sx={{ minWidth: '80px', maxWidth: '100px' }}
             >
               Back
             </NeumorphicButton>

@@ -1,19 +1,30 @@
 import {MD3LightTheme, MD3DarkTheme} from 'react-native-paper';
+import { NeumorphicDesignSystem } from '../../../shared/design-system';
+
+const { colors: designColors } = NeumorphicDesignSystem;
 
 export const colors = {
-  primary: '#2196F3',
-  secondary: '#03DAC6',
-  error: '#B00020',
-  background: '#FFFFFF',
-  surface: '#FFFFFF',
-  text: '#000000',
-  disabled: '#757575',
-  placeholder: '#9E9E9E',
+  primary: designColors.accent.primary,
+  secondary: designColors.accent.secondary,
+  error: designColors.accent.error,
+  background: designColors.background.primary,
+  surface: designColors.background.secondary,
+  text: designColors.text.primary,
+  disabled: designColors.text.tertiary,
+  placeholder: designColors.text.secondary,
   backdrop: 'rgba(0, 0, 0, 0.5)',
-  notification: '#FF4081',
-  success: '#4CAF50',
-  warning: '#FFC107',
-  info: '#2196F3',
+  notification: designColors.accent.error,
+  success: designColors.accent.success,
+  warning: designColors.accent.warning,
+  info: designColors.accent.info,
+  // Neumorphic specific colors
+  neumorphic: {
+    background: designColors.background.primary,
+    backgroundSecondary: designColors.background.secondary,
+    backgroundTertiary: designColors.background.tertiary,
+    shadowDark: designColors.shadow.dark,
+    shadowLight: designColors.shadow.light,
+  },
 };
 
 export const darkColors = {
@@ -48,6 +59,65 @@ export const typography = {
     lg: 20,
     xl: 24,
     xxl: 32,
+  },
+};
+
+// Neumorphic styles for React Native
+export const neumorphicStyles = {
+  // Card styles
+  card: {
+    backgroundColor: colors.neumorphic.background,
+    borderRadius: 20,
+    padding: 24,
+    // React Native doesn't support multiple box-shadows, so we'll use elevation
+    elevation: 8,
+    shadowColor: colors.neumorphic.shadowDark,
+    shadowOffset: {
+      width: 8,
+      height: 8,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+  },
+  
+  // Button styles
+  button: {
+    backgroundColor: colors.neumorphic.backgroundSecondary,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    elevation: 6,
+    shadowColor: colors.neumorphic.shadowDark,
+    shadowOffset: {
+      width: 6,
+      height: 6,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+  },
+  
+  // Input styles
+  input: {
+    backgroundColor: colors.neumorphic.background,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    // For inset effect, we'll use a darker background
+    backgroundColor: colors.neumorphic.backgroundTertiary,
+    borderWidth: 0,
+  },
+  
+  // Sidebar styles
+  sidebar: {
+    backgroundColor: colors.neumorphic.background,
+    elevation: 12,
+    shadowColor: colors.neumorphic.shadowDark,
+    shadowOffset: {
+      width: 12,
+      height: 0,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
   },
 };
 

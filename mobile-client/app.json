@@ -1,4 +1,7 @@
 {
   "name": "VoiceVault",
-  "displayName": "VoiceVault"
-} 
+  "displayName": "VoiceVault",
+  "android": {
+    "package": "com.anonymous.voicevault"
+  }
+}

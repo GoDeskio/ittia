@@ -1,80 +1,139 @@
 import { createTheme } from '@mui/material/styles';
+import { NeumorphicDesignSystem } from '../../shared/design-system';
 
-const neuPalette = {
-  light: '#e0e5ec',
-  main: '#d1d9e6',
-  dark: '#b8c3d9',
-  contrastText: '#4a4a4a'
-};
+const { colors, typography, shadows, borderRadius, spacing } = NeumorphicDesignSystem;
 
 const theme = createTheme({
   palette: {
     primary: {
-      light: '#e0e5ec',
-      main: '#d1d9e6',
-      dark: '#b8c3d9',
-      contrastText: '#4a4a4a',
+      light: colors.background.light,
+      main: colors.accent.primary,
+      dark: colors.accent.secondary,
+      contrastText: colors.text.inverse,
     },
     secondary: {
-      light: '#c8d0e7',
-      main: '#b8c3d9',
-      dark: '#9ba6c5',
-      contrastText: '#4a4a4a',
+      light: colors.background.secondary,
+      main: colors.background.tertiary,
+      dark: colors.background.dark,
+      contrastText: colors.text.primary,
     },
     error: {
-      main: '#f44336',
+      main: colors.accent.error,
     },
     warning: {
-      main: '#ff9800',
+      main: colors.accent.warning,
     },
     success: {
-      main: '#4caf50',
+      main: colors.accent.success,
+    },
+    info: {
+      main: colors.accent.info,
     },
     background: {
-      default: '#e0e5ec',
-      paper: '#e0e5ec',
-      dark: '#d1d9e6',
-      light: '#e8edf5',
+      default: colors.background.primary,
+      paper: colors.background.primary,
     },
     text: {
-      primary: '#4a4a4a',
-      secondary: '#666666',
+      primary: colors.text.primary,
+      secondary: colors.text.secondary,
     },
   },
   typography: {
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-    ].join(','),
+    fontFamily: typography.fontFamily.primary,
+    h1: {
+      fontSize: typography.fontSize['5xl'],
+      fontWeight: typography.fontWeight.bold,
+      lineHeight: typography.lineHeight.tight,
+    },
+    h2: {
+      fontSize: typography.fontSize['4xl'],
+      fontWeight: typography.fontWeight.bold,
+      lineHeight: typography.lineHeight.tight,
+    },
+    h3: {
+      fontSize: typography.fontSize['3xl'],
+      fontWeight: typography.fontWeight.semibold,
+      lineHeight: typography.lineHeight.tight,
+    },
+    h4: {
+      fontSize: typography.fontSize['2xl'],
+      fontWeight: typography.fontWeight.semibold,
+      lineHeight: typography.lineHeight.normal,
+    },
+    h5: {
+      fontSize: typography.fontSize.xl,
+      fontWeight: typography.fontWeight.medium,
+      lineHeight: typography.lineHeight.normal,
+    },
+    h6: {
+      fontSize: typography.fontSize.lg,
+      fontWeight: typography.fontWeight.medium,
+      lineHeight: typography.lineHeight.normal,
+    },
+    body1: {
+      fontSize: typography.fontSize.base,
+      fontWeight: typography.fontWeight.normal,
+      lineHeight: typography.lineHeight.normal,
+    },
+    body2: {
+      fontSize: typography.fontSize.sm,
+      fontWeight: typography.fontWeight.normal,
+      lineHeight: typography.lineHeight.normal,
+    },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
-          backgroundColor: '#e0e5ec',
-          color: '#4a4a4a', // Dark grey text color
-          boxShadow: '9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5)',
-          borderRadius: '12px',
-          padding: '8px 16px', // Reduced padding for smaller buttons
-          fontSize: '0.875rem', // Slightly smaller font
-          fontWeight: 500,
-          '&:hover': {
-            backgroundColor: '#d1d9e6',
-            color: '#3a3a3a', // Slightly darker on hover
-            boxShadow: '6px 6px 10px rgb(163,177,198,0.6), -6px -6px 10px rgba(255,255,255, 0.5)',
+          borderRadius: borderRadius['2xl'],
+          padding: `${spacing[3]} ${spacing[6]}`,
+          fontSize: typography.fontSize.base,
+          fontWeight: typography.fontWeight.semibold,
+          transition: NeumorphicDesignSystem.animations.transitions.all,
+          border: 'none',
+          '&.MuiButton-contained': {
+            background: colors.gradients.accent,
+            color: colors.text.inverse,
+            boxShadow: shadows.raised.md,
+            '&:hover': {
+              background: colors.gradients.accent,
+              boxShadow: shadows.hover.md,
+              transform: 'translateY(-1px)',
+            },
+            '&:active': {
+              boxShadow: shadows.inset.sm,
+              transform: 'translateY(0px)',
+            },
           },
-          '&:active': {
-            color: '#2a2a2a', // Even darker when pressed
-            boxShadow: 'inset 6px 6px 10px rgb(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255, 0.5)',
+          '&.MuiButton-outlined': {
+            background: colors.gradients.primary,
+            color: colors.text.primary,
+            boxShadow: shadows.raised.md,
+            border: 'none',
+            '&:hover': {
+              background: colors.gradients.secondary,
+              boxShadow: shadows.hover.md,
+              transform: 'translateY(-1px)',
+            },
+            '&:active': {
+              boxShadow: shadows.inset.sm,
+              transform: 'translateY(0px)',
+            },
+          },
+          '&.MuiButton-text': {
+            background: 'transparent',
+            color: colors.text.primary,
+            boxShadow: 'none',
+            '&:hover': {
+              background: colors.background.secondary,
+              boxShadow: shadows.raised.sm,
+            },
           },
           '&.Mui-disabled': {
-            color: '#8a8a8a', // Lighter grey when disabled
+            color: colors.text.tertiary,
+            background: colors.background.secondary,
+            boxShadow: 'none',
           },
         },
       },
@@ -82,20 +141,31 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: '#e0e5ec',
-          borderRadius: '15px',
-          boxShadow: '9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5)',
-          padding: '20px',
+          background: colors.gradients.primary,
+          borderRadius: borderRadius['3xl'],
+          boxShadow: shadows.raised.lg,
+          padding: spacing[6],
+          transition: NeumorphicDesignSystem.animations.transitions.all,
+          '&:hover': {
+            boxShadow: shadows.raised.xl,
+            transform: 'translateY(-2px)',
+          },
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          backgroundColor: '#e0e5ec',
-          borderRadius: '15px',
-          boxShadow: '9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5)',
-          padding: '20px',
+          background: colors.gradients.primary,
+          borderRadius: borderRadius['3xl'],
+          boxShadow: shadows.raised.lg,
+          padding: spacing[6],
+          transition: NeumorphicDesignSystem.animations.transitions.all,
+          border: 'none',
+          '&:hover': {
+            boxShadow: shadows.raised.xl,
+            transform: 'translateY(-2px)',
+          },
         },
       },
     },
@@ -144,22 +214,23 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '&.MuiOutlinedInput-root': {
-            backgroundColor: '#e0e5ec',
-            borderRadius: '12px',
-            boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
+            backgroundColor: colors.background.primary,
+            borderRadius: borderRadius['2xl'],
+            boxShadow: shadows.inset.md,
             border: 'none',
-            transition: 'all 0.3s ease',
+            transition: NeumorphicDesignSystem.animations.transitions.all,
             
             '& fieldset': {
               display: 'none', // Completely remove fieldset
             },
             
             '&:hover': {
-              backgroundColor: '#e0e5ec',
+              backgroundColor: colors.background.primary,
+              boxShadow: shadows.inset.lg,
             },
             '&.Mui-focused': {
-              backgroundColor: '#e0e5ec',
-              boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
+              backgroundColor: colors.background.primary,
+              boxShadow: shadows.inset.lg,
             },
           },
           

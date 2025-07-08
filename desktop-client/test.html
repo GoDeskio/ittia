@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceVault Desktop Test</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #1976D2;
+        }
+        .button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        .button.recording {
+            background-color: #f44336;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        .error {
+            background-color: #f44336;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .transcript {
+            background-color: #2e2e2e;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            margin: 10px 0;
+        }
+        .visualizer {
+            width: 100%;
+            height: 100px;
+            background-color: #2e2e2e;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Simple Audio Visualizer Component
+        const AudioVisualizer = ({ isActive }) => {
+            return (
+                <div className="visualizer">
+                    {isActive ? (
+                        <div>🎤 Recording... (Audio visualization would go here)</div>
+                    ) : (
+                        <div>🎤 Ready to record</div>
+                    )}
+                </div>
+            );
+        };
+
+        // Voice Recognition Panel Component
+        const VoiceRecognitionPanel = ({ isListening, transcript, error, onStartListening, onStopListening }) => {
+            return (
+                <div>
+                    <h3>Voice Recognition</h3>
+                    <AudioVisualizer isActive={isListening} />
+                    
+                    {error && (
+                        <div className="error">{error}</div>
+                    )}
+                    
+                    <button 
+                        className={`button ${isListening ? 'recording' : ''}`}
+                        onClick={isListening ? onStopListening : onStartListening}
+                    >
+                        {isListening ? '🛑 Stop Listening' : '🎤 Start Listening'}
+                    </button>
+                    
+                    {transcript && (
+                        <div className="transcript">
+                            <strong>Transcript:</strong> {transcript}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // System Commands Component
+        const SystemCommands = () => {
+            const commands = [
+                { command: 'Open Settings', description: 'Open the application settings', category: 'Navigation' },
+                { command: 'Start Recording', description: 'Begin voice recording', category: 'Voice' },
+                { command: 'Save Voice Profile', description: 'Save the current voice recording as a profile', category: 'Voice' },
+                { command: 'Delete Last Recording', description: 'Delete the most recent voice recording', category: 'Voice' },
+                { command: 'Adjust Volume', description: 'Adjust system volume', category: 'System' },
+                { command: 'Lock Screen', description: 'Lock the computer screen', category: 'System' },
+            ];
+
+            return (
+                <div>
+                    <h3>System Commands</h3>
+                    {commands.map((cmd, index) => (
+                        <div key={index} style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#2e2e2e', borderRadius: '4px' }}>
+                            <strong>{cmd.command}</strong><br />
+                            <small>{cmd.description}</small><br />
+                            <span style={{ backgroundColor: '#2196F3', color: 'white', padding: '2px 6px', borderRadius: '2px', fontSize: '12px' }}>
+                                {cmd.category}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        // Voice Profile Manager Component
+        const VoiceProfileManager = () => {
+            const [profiles, setProfiles] = useState([
+                { id: '1', name: 'Default Profile', date: '2024-02-20', duration: '0:30' },
+                { id: '2', name: 'Meeting Voice', date: '2024-02-19', duration: '1:15' },
+            ]);
+            const [isPlaying, setIsPlaying] = useState(null);
+
+            const handlePlay = (id) => {
+                setIsPlaying(id);
+                setTimeout(() => setIsPlaying(null), 2000); // Auto-stop after 2 seconds
+            };
+
+            const handleDelete = (id) => {
+                setProfiles(profiles.filter(profile => profile.id !== id));
+            };
+
+            return (
+                <div>
+                    <h3>Voice Profiles</h3>
+                    <button className="button">Add Profile</button>
+                    
+                    {profiles.map((profile) => (
+                        <div key={profile.id} style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#2e2e2e', borderRadius: '4px' }}>
+                            <strong>{profile.name}</strong><br />
+                            <small>Created: {profile.date} | Duration: {profile.duration}</small><br />
+                            <button 
+                                className="button" 
+                                onClick={() => handlePlay(profile.id)}
+                                style={{ marginRight: '5px' }}
+                            >
+                                {isPlaying === profile.id ? 'Stop' : 'Play'}
+                            </button>
+                            <button 
+                                className="button" 
+                                onClick={() => handleDelete(profile.id)}
+                                style={{ backgroundColor: '#f44336' }}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        // Main App Component
+        const App = () => {
+            const [isListening, setIsListening] = useState(false);
+            const [transcript, setTranscript] = useState('');
+            const [error, setError] = useState('');
+
+            // Simulate Electron IPC
+            const ipcRenderer = window.electronAPI || null;
+
+            useEffect(() => {
+                if (ipcRenderer) {
+                    // Real Electron environment
+                    ipcRenderer.send('init-voice-recognition', {
+                        SAMPLE_RATE: 16000,
+                        CHANNELS: 1,
+                        BIT_DEPTH: 16,
+                        LANGUAGE: 'en-US',
+                    });
+
+                    ipcRenderer.on('voice-result', (result) => {
+                        setTranscript(result);
+                    });
+
+                    ipcRenderer.on('voice-error', (error) => {
+                        setError(error);
+                    });
+                } else {
+                    // Browser mode - set demo message
+                    setTranscript('Running in browser mode - Electron features not available');
+                }
+            }, []);
+
+            const handleStartListening = () => {
+                if (ipcRenderer) {
+                    ipcRenderer.send('start-listening');
+                    setIsListening(true);
+                    setError('');
+                } else {
+                    // Demo mode
+                    setIsListening(true);
+                    setError('');
+                    setTimeout(() => {
+                        setTranscript('Demo: This is a simulated voice recognition result!');
+                        setIsListening(false);
+                    }, 3000);
+                }
+            };
+
+            const handleStopListening = () => {
+                if (ipcRenderer) {
+                    ipcRenderer.send('stop-listening');
+                    setIsListening(false);
+                } else {
+                    setIsListening(false);
+                }
+            };
+
+            return (
+                <div className="container">
+                    <h1>🎙️ VoiceVault Desktop</h1>
+                    <div style={{ 
+                        backgroundColor: ipcRenderer ? '#4caf50' : '#ff9800', 
+                        color: 'white', 
+                        padding: '10px', 
+                        borderRadius: '4px', 
+                        marginBottom: '20px',
+                        textAlign: 'center'
+                    }}>
+                        Status: {ipcRenderer ? '✅ Electron Mode' : '🌐 Browser Demo Mode'}
+                    </div>
+                    
+                    <div className="card">
+                        <VoiceRecognitionPanel
+                            isListening={isListening}
+                            transcript={transcript}
+                            error={error}
+                            onStartListening={handleStartListening}
+                            onStopListening={handleStopListening}
+                        />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                        <div className="card">
+                            <SystemCommands />
+                        </div>
+
+                        <div className="card">
+                            <VoiceProfileManager />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

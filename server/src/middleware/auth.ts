@@ -60,4 +60,38 @@ export const authenticateUser = async (req: AuthenticatedRequest, res: Response,
   }
 };
 
-export const auth = authenticateToken; 
+export const auth = authenticateToken;
+
+// Admin role middleware
+export const isAdmin = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    if (req.user.role !== 'admin' && req.user.role !== 'god') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// God role middleware (highest level admin)
+export const isGod = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    if (req.user.role !== 'god') {
+      return res.status(403).json({ message: 'God access required' });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error' });
+  }
+}; 

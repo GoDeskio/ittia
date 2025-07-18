@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.auth = exports.authenticateUser = exports.authenticateToken = void 0;
+exports.isGod = exports.isAdmin = exports.auth = exports.authenticateUser = exports.authenticateToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = require("../models/User");
 const authenticateToken = async (req, res, next) => {
@@ -51,4 +51,34 @@ const authenticateUser = async (req, res, next) => {
 };
 exports.authenticateUser = authenticateUser;
 exports.auth = exports.authenticateToken;
+const isAdmin = async (req, res, next) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Authentication required' });
+        }
+        if (req.user.role !== 'admin' && req.user.role !== 'god') {
+            return res.status(403).json({ message: 'Admin access required' });
+        }
+        next();
+    }
+    catch (error) {
+        return res.status(500).json({ message: 'Server error' });
+    }
+};
+exports.isAdmin = isAdmin;
+const isGod = async (req, res, next) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Authentication required' });
+        }
+        if (req.user.role !== 'god') {
+            return res.status(403).json({ message: 'God access required' });
+        }
+        next();
+    }
+    catch (error) {
+        return res.status(500).json({ message: 'Server error' });
+    }
+};
+exports.isGod = isGod;
 //# sourceMappingURL=auth.js.map
